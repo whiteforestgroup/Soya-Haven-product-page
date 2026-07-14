@@ -1,8 +1,16 @@
 import { useState } from "react";
-import ImagePlaceholder from "./ImagePlaceholder";
 import { scents, sizes, heroDifferentiators } from "../data/product";
+import lemongrassSunflower from "../assets/hero/lemongrass-sunflower.jpg";
+import pinaColadaHand from "../assets/hero/pina-colada-hand.jpg";
+import peppermintDiagonal from "../assets/hero/peppermint-diagonal.jpg";
+import lemongrassSweetOrangePair from "../assets/hero/lemongrass-sweetorange-pair.jpg";
 
-const galleryCount = 5;
+const galleryImages = [
+  { src: lemongrassSunflower, alt: "Soya Haven Lemongrass room spray with sunflower and greenery" },
+  { src: pinaColadaHand, alt: "Hand holding Soya Haven Pina Colada fragrance spray" },
+  { src: peppermintDiagonal, alt: "Soya Haven Peppermint room spray on a bed" },
+  { src: lemongrassSweetOrangePair, alt: "Soya Haven Lemongrass and Sweet Orange room sprays side by side" },
+];
 
 export default function Hero() {
   const [activeScent, setActiveScent] = useState(scents[0]);
@@ -15,10 +23,11 @@ export default function Hero() {
     <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 py-10 md:grid-cols-2 md:gap-12 md:px-6 md:py-16">
       {/* Gallery */}
       <div>
-        <div className="relative">
-          <ImagePlaceholder
-            label={`Hero Image ${activeImage + 1}`}
-            className="aspect-[4/5] w-full"
+        <div className="relative overflow-hidden rounded">
+          <img
+            src={galleryImages[activeImage].src}
+            alt={galleryImages[activeImage].alt}
+            className="aspect-[4/5] w-full object-cover"
           />
           <button
             aria-label="Play product video"
@@ -28,15 +37,15 @@ export default function Hero() {
           </button>
         </div>
         <div className="mt-3 flex gap-2">
-          {Array.from({ length: galleryCount }).map((_, i) => (
+          {galleryImages.map((img, i) => (
             <button
-              key={i}
+              key={img.src}
               onClick={() => setActiveImage(i)}
-              className={`aspect-square w-full max-w-20 overflow-hidden border transition ${
+              className={`aspect-square w-full max-w-20 overflow-hidden rounded border transition ${
                 activeImage === i ? "border-ink" : "border-transparent"
               }`}
             >
-              <ImagePlaceholder label={`${i + 1}`} className="h-full w-full" />
+              <img src={img.src} alt={img.alt} className="h-full w-full object-cover" />
             </button>
           ))}
         </div>
