@@ -12,9 +12,13 @@ export default function Ingredients() {
         <ImagePlaceholder label="Ingredient Image A" className="aspect-square w-full" />
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 md:grid-cols-1">
-          {ingredientValues.map((item) => (
+          {ingredientValues.map((item, i) => (
             <div key={item.title} className="flex flex-col items-center gap-2 text-center">
-              <span className="h-9 w-9 rounded-full border border-tan" />
+              <span
+                className={`h-9 w-9 rounded-full border ${
+                  i % 2 === 0 ? "border-terracotta" : "border-sage"
+                }`}
+              />
               <p className="font-medium text-ink">{item.title}</p>
               <p className="text-sm text-ink-soft">{item.body}</p>
             </div>

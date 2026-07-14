@@ -54,7 +54,7 @@ export default function Hero() {
       {/* Buy box */}
       <div className="flex flex-col justify-center">
         <div className="flex items-center gap-2 text-sm text-ink-soft">
-          <span className="tracking-widest text-tan">★★★★★</span>
+          <span className="tracking-widest text-gold">★★★★★</span>
           <span>4.9/5 from 250+ happy customers</span>
         </div>
 
@@ -70,9 +70,13 @@ export default function Hero() {
         </p>
 
         <div className="mt-5 flex gap-6">
-          {heroDifferentiators.map((d) => (
+          {heroDifferentiators.map((d, i) => (
             <div key={d.title} className="flex items-center gap-2 text-xs text-ink-soft uppercase">
-              <span className="h-4 w-4 rounded-full border border-tan" />
+              <span
+                className={`h-4 w-4 rounded-full border ${
+                  i % 2 === 0 ? "border-terracotta" : "border-sage"
+                }`}
+              />
               {d.title}
             </div>
           ))}
@@ -117,7 +121,7 @@ export default function Hero() {
                 }`}
               >
                 {size.popular && (
-                  <span className="absolute top-2 right-2 rounded-full bg-tan/30 px-2 py-0.5 text-[10px] tracking-wide uppercase">
+                  <span className="absolute top-2 right-2 rounded-full bg-terracotta/25 px-2 py-0.5 text-[10px] tracking-wide uppercase">
                     Most Popular
                   </span>
                 )}

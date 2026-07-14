@@ -16,8 +16,8 @@ export default function BundleBanner() {
               <p className="mt-2 text-xs text-cream/60">Standard shipping</p>
               <p className="mt-2 font-medium">$18.00+</p>
             </div>
-            <div className="relative rounded border border-tan px-4 py-4">
-              <span className="absolute top-2 right-2 h-4 w-4 rounded-full border border-tan" />
+            <div className="relative rounded border border-terracotta px-4 py-4">
+              <span className="absolute top-2 right-2 h-4 w-4 rounded-full border border-terracotta" />
               <p className="text-sm tracking-wide uppercase">Any 2 Bottles</p>
               <p className="mt-2 text-xs text-cream/60">Free shipping</p>
               <p className="mt-2 font-medium">Most Popular</p>

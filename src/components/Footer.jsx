@@ -1,9 +1,9 @@
+import logo from "../assets/logo.png";
+
 export default function Footer() {
   return (
     <footer className="border-t border-ink/10 bg-cream py-10 text-center">
-      <p className="font-display text-lg tracking-[0.2em] text-ink uppercase">
-        Soya Haven Co.
-      </p>
+      <img src={logo} alt="Soya Haven Co. Aromatherapy" className="mx-auto h-16 w-auto" />
       <div className="mt-4 flex justify-center gap-6 text-xs tracking-wide text-ink-soft uppercase">
         <a href="#" className="hover:text-ink">Shipping &amp; Returns</a>
         <a href="#" className="hover:text-ink">Contact</a>
