@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import AnnouncementBar from "./components/AnnouncementBar";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
@@ -8,13 +9,19 @@ import Ingredients from "./components/Ingredients";
 import Testimonials from "./components/Testimonials";
 import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
+import StickyCTA from "./components/StickyCTA";
 
 function App() {
+  const [ctaSummary, setCtaSummary] = useState(null);
+  const heroRef = useRef(null);
+
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-cream pb-20">
       <AnnouncementBar />
       <Header />
-      <Hero />
+      <div ref={heroRef}>
+        <Hero onSummaryChange={setCtaSummary} />
+      </div>
       <TrustBadges />
       <WhyUs />
       <BundleBanner />
@@ -22,6 +29,7 @@ function App() {
       <Testimonials />
       <FAQ />
       <Footer />
+      <StickyCTA summary={ctaSummary} scrollTargetRef={heroRef} />
     </div>
   );
 }

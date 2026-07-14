@@ -26,6 +26,12 @@ export default function Testimonials() {
           <div className="grid flex-1 grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
             {visible.map((t) => (
               <div key={t.name} className="flex flex-col items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-terracotta/20 text-sm font-medium text-terracotta">
+                  {t.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </span>
                 <span className="tracking-widest text-gold">★★★★★</span>
                 <p className="text-sm text-ink">"{t.quote}"</p>
                 <p className="text-xs text-ink-soft">— {t.name}</p>

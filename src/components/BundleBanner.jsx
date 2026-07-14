@@ -7,7 +7,7 @@ export default function BundleBanner() {
         <div>
           <h2 className="font-display text-4xl">Better Together</h2>
           <p className="mt-2 text-cream/70">
-            Mix, match, and save on shipping.
+            One for you, one to gift — mix, match, and save on shipping.
           </p>
 
           <div className="mt-8 grid grid-cols-2 gap-4">

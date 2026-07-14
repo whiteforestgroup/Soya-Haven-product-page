@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { scents, sizes, heroDifferentiators } from "../data/product";
 import lemongrassSunflower from "../assets/hero/lemongrass-sunflower.jpg";
 import pinaColadaHand from "../assets/hero/pina-colada-hand.jpg";
@@ -12,12 +12,27 @@ const galleryImages = [
   { src: lemongrassSweetOrangePair, alt: "Soya Haven Lemongrass and Sweet Orange room sprays side by side" },
 ];
 
-export default function Hero() {
+export default function Hero({ onSummaryChange }) {
   const [activeScent, setActiveScent] = useState(scents[0]);
   const [activeSize, setActiveSize] = useState(
     sizes.find((s) => s.popular)?.id ?? sizes[0].id
   );
   const [activeImage, setActiveImage] = useState(0);
+  const [bundleOn, setBundleOn] = useState(true);
+  const [secondScent, setSecondScent] = useState(scents[1]);
+
+  const selectedSize = sizes.find((s) => s.id === activeSize);
+  const itemCount = bundleOn ? 2 : 1;
+  const totalPrice = selectedSize.price * itemCount;
+
+  useEffect(() => {
+    onSummaryChange?.({
+      image: galleryImages[activeImage].src,
+      scent: activeScent,
+      totalPrice,
+      itemCount,
+    });
+  }, [activeImage, activeScent, totalPrice, itemCount]);
 
   return (
     <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 py-10 md:grid-cols-2 md:gap-12 md:px-6 md:py-16">
@@ -65,8 +80,8 @@ export default function Hero() {
 
         <p className="mt-4 max-w-md text-[15px] leading-relaxed text-ink-soft">
           A handcrafted room spray made with naturally inspired ingredients
-          that instantly refreshes your space — without flames, plugs, or
-          electricity.
+          that turns any room into your happy place in seconds — no flames,
+          plugs, or electricity required.
         </p>
 
         <div className="mt-5 flex gap-6">
@@ -133,15 +148,81 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Incentive banner */}
-        <div className="mt-6 rounded border border-terracotta/30 bg-terracotta/10 px-4 py-3 text-center text-xs tracking-wide text-ink uppercase">
-          Buy Any 2 Room Sprays &amp; Shipping Is On Us
+        {/* Bundle upsell — defaults on to nudge the 2-bottle purchase */}
+        <div className="mt-6">
+          <p className="text-xs font-medium tracking-widest text-ink uppercase">
+            3. Add A 2nd Bottle{" "}
+            <span className="text-sage-deep">(Free Shipping)</span>
+          </p>
+          <button
+            type="button"
+            onClick={() => setBundleOn((v) => !v)}
+            className={`mt-3 flex w-full items-start gap-3 rounded border px-4 py-4 text-left transition ${
+              bundleOn ? "border-sage-deep bg-sage-deep/10" : "border-ink/20 hover:border-ink/40"
+            }`}
+          >
+            <span
+              className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border text-xs ${
+                bundleOn ? "border-sage-deep bg-sage-deep text-cream" : "border-ink/30 text-transparent"
+              }`}
+            >
+              ✓
+            </span>
+            <span>
+              <span className="flex flex-wrap items-center gap-2 font-medium text-ink">
+                Add a 2nd Bottle
+                <span className="rounded-full bg-terracotta/20 px-2 py-0.5 text-[10px] tracking-wide text-terracotta uppercase">
+                  Free Shipping
+                </span>
+              </span>
+              <span className="mt-1 block text-xs text-ink-soft">
+                One for you, one to gift — most customers add a second scent.
+              </span>
+            </span>
+          </button>
+
+          {bundleOn && (
+            <div className="mt-3 pl-1">
+              <p className="text-xs font-medium tracking-widest text-ink uppercase">
+                2nd Bottle Scent
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {scents.map((scent) => (
+                  <button
+                    key={scent}
+                    onClick={() => setSecondScent(scent)}
+                    className={`rounded border px-3 py-1.5 text-xs transition ${
+                      secondScent === scent
+                        ? "border-terracotta bg-terracotta text-cream"
+                        : "border-ink/20 text-ink hover:border-ink/50"
+                    }`}
+                  >
+                    {scent}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* CTA */}
-        <button className="mt-4 w-full rounded bg-sage-deep py-4 text-sm font-medium tracking-widest text-cream uppercase transition hover:bg-sage-deep-dark">
-          Choose My Scent
+        {/* Price + CTA */}
+        <div className="mt-6 flex items-end justify-between">
+          <div>
+            <p className="text-3xl font-medium text-ink">${totalPrice.toFixed(2)}</p>
+            {bundleOn && (
+              <p className="text-xs text-sage-deep">2 bottles · free shipping included</p>
+            )}
+          </div>
+        </div>
+
+        <button className="mt-3 w-full rounded bg-sage-deep py-4 text-sm font-medium tracking-widest text-cream uppercase transition hover:bg-sage-deep-dark">
+          {bundleOn ? "Add 2 to Cart" : "Add to Cart"}
         </button>
+        <p className="mt-2 text-center text-[11px] text-ink-soft">
+          {bundleOn
+            ? "🎁 Free shipping applied on your 2-bottle bundle"
+            : "Add a 2nd bottle above for free shipping"}
+        </p>
       </div>
     </section>
   );
