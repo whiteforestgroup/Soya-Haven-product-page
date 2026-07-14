@@ -32,8 +32,8 @@ export const whyUs = [
     body: "Preserves fragrance quality and looks beautiful in your home.",
   },
   {
-    title: "Naturally Inspired",
-    body: "Thoughtfully crafted scents using natural inspired ingredients.",
+    title: "Environmentally Friendly",
+    body: "Recyclable amber glass bottles you can feel good about.",
   },
   {
     title: "Eliminates Odors Naturally",
