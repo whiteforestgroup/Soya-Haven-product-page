@@ -1,4 +1,4 @@
-import ImagePlaceholder from "./ImagePlaceholder";
+import bundleLifestyle from "../assets/sections/bundle-lifestyle.jpg";
 
 export default function BundleBanner() {
   return (
@@ -25,7 +25,11 @@ export default function BundleBanner() {
           </div>
         </div>
 
-        <ImagePlaceholder label="Bundle Lifestyle Image" className="aspect-[4/3] w-full" />
+        <img
+          src={bundleLifestyle}
+          alt="Three Soya Haven room sprays and the brand card in a wooden tray"
+          className="aspect-[4/3] w-full rounded object-cover"
+        />
       </div>
     </section>
   );

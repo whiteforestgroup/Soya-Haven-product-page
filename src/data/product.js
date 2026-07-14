@@ -43,8 +43,8 @@ export const whyUs = [
 
 export const ingredientValues = [
   {
-    title: "Clean Ingredients",
-    body: "No parabens, phthalates, or harsh chemicals.",
+    title: "Natural Ingredients",
+    body: "Naturally inspired, with no parabens, phthalates, or harsh chemicals.",
   },
   {
     title: "Eco Conscious",

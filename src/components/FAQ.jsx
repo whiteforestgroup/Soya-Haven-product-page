@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ImagePlaceholder from "./ImagePlaceholder";
 import { faqs } from "../data/product";
+import faqLifestyle from "../assets/sections/faq-lifestyle.jpg";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -8,7 +8,11 @@ export default function FAQ() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 md:px-6">
       <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
-        <ImagePlaceholder label="Closing Lifestyle Image" className="aspect-[4/5] w-full" />
+        <img
+          src={faqLifestyle}
+          alt="Soya Haven Sweet Orange and Bergamot Vanilla room sprays in a wooden tray"
+          className="aspect-[4/5] w-full rounded object-cover"
+        />
 
         <div>
           <h2 className="font-display text-4xl text-ink">Frequently Asked Questions</h2>

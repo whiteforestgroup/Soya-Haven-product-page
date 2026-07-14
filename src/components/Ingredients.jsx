@@ -1,5 +1,6 @@
-import ImagePlaceholder from "./ImagePlaceholder";
 import { ingredientValues } from "../data/product";
+import ingredientA from "../assets/sections/ingredient-a.jpg";
+import ingredientB from "../assets/sections/ingredient-b.jpg";
 
 export default function Ingredients() {
   return (
@@ -9,7 +10,11 @@ export default function Ingredients() {
       </h2>
 
       <div className="mt-10 grid grid-cols-1 items-center gap-10 md:grid-cols-3">
-        <ImagePlaceholder label="Ingredient Image A" className="aspect-square w-full" />
+        <img
+          src={ingredientA}
+          alt="Close up of the Soya Haven label showing naturally inspired ingredients"
+          className="aspect-square w-full rounded object-cover"
+        />
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 md:grid-cols-1">
           {ingredientValues.map((item, i) => (
@@ -25,7 +30,11 @@ export default function Ingredients() {
           ))}
         </div>
 
-        <ImagePlaceholder label="Ingredient Image B" className="aspect-square w-full" />
+        <img
+          src={ingredientB}
+          alt="Hand holding a freshly filled Soya Haven room spray bottle"
+          className="aspect-square w-full rounded object-cover"
+        />
       </div>
     </section>
   );
