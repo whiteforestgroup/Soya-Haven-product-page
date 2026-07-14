@@ -94,7 +94,7 @@ export default function Hero() {
                 onClick={() => setActiveScent(scent)}
                 className={`rounded border px-4 py-2 text-sm transition ${
                   activeScent === scent
-                    ? "border-ink bg-ink text-cream"
+                    ? "border-sage-deep bg-sage-deep text-cream"
                     : "border-ink/20 text-ink hover:border-ink/50"
                 }`}
               >
@@ -116,7 +116,7 @@ export default function Hero() {
                 onClick={() => setActiveSize(size.id)}
                 className={`relative rounded border px-4 py-4 text-left transition ${
                   activeSize === size.id
-                    ? "border-ink bg-cream-dark"
+                    ? "border-sage-deep bg-sage-deep/10"
                     : "border-ink/20 hover:border-ink/50"
                 }`}
               >
@@ -134,12 +134,12 @@ export default function Hero() {
         </div>
 
         {/* Incentive banner */}
-        <div className="mt-6 rounded bg-cream-dark px-4 py-3 text-center text-xs tracking-wide text-ink uppercase">
+        <div className="mt-6 rounded border border-terracotta/30 bg-terracotta/10 px-4 py-3 text-center text-xs tracking-wide text-ink uppercase">
           Buy Any 2 Room Sprays &amp; Shipping Is On Us
         </div>
 
         {/* CTA */}
-        <button className="mt-4 w-full rounded bg-espresso py-4 text-sm font-medium tracking-widest text-cream uppercase transition hover:bg-espresso-light">
+        <button className="mt-4 w-full rounded bg-sage-deep py-4 text-sm font-medium tracking-widest text-cream uppercase transition hover:bg-sage-deep-dark">
           Choose My Scent
         </button>
       </div>

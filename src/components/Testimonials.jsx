@@ -18,7 +18,7 @@ export default function Testimonials() {
             aria-label="Previous testimonials"
             disabled={page === 0}
             onClick={() => setPage((p) => Math.max(0, p - 1))}
-            className="hidden shrink-0 text-ink-soft disabled:opacity-30 md:block"
+            className="hidden shrink-0 text-sage-deep disabled:opacity-30 md:block"
           >
             ‹
           </button>
@@ -37,7 +37,7 @@ export default function Testimonials() {
             aria-label="Next testimonials"
             disabled={page === maxPage}
             onClick={() => setPage((p) => Math.min(maxPage, p + 1))}
-            className="hidden shrink-0 text-ink-soft disabled:opacity-30 md:block"
+            className="hidden shrink-0 text-sage-deep disabled:opacity-30 md:block"
           >
             ›
           </button>

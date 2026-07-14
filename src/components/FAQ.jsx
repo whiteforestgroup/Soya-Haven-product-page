@@ -23,7 +23,7 @@ export default function FAQ() {
                     className="flex w-full items-center justify-between py-4 text-left text-sm text-ink"
                   >
                     {item.q}
-                    <span className="ml-4 shrink-0 text-ink-soft">
+                    <span className={`ml-4 shrink-0 ${isOpen ? "text-sage-deep" : "text-ink-soft"}`}>
                       {isOpen ? "−" : "+"}
                     </span>
                   </button>
