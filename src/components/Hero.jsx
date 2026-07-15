@@ -1,29 +1,32 @@
 import { useState, useEffect } from "react";
 import { scents, sizes, heroDifferentiators } from "../data/product";
 import lemongrassSunflower from "../assets/hero/lemongrass-sunflower.jpg";
-import pinaColadaHand from "../assets/hero/pina-colada-hand.jpg";
 import peppermintDiagonal from "../assets/hero/peppermint-diagonal.jpg";
 import lemongrassSweetOrangePair from "../assets/hero/lemongrass-sweetorange-pair.jpg";
 
 const galleryImages = [
   { src: lemongrassSunflower, alt: "Soya Haven Lemongrass room spray with sunflower and greenery" },
-  { src: pinaColadaHand, alt: "Hand holding Soya Haven Pina Colada fragrance spray" },
-  { src: peppermintDiagonal, alt: "Soya Haven Peppermint room spray on a bed" },
+  { src: peppermintDiagonal, alt: "Soya Haven Eucalyptus Peppermint room spray on a bed" },
   { src: lemongrassSweetOrangePair, alt: "Soya Haven Lemongrass and Sweet Orange room sprays side by side" },
 ];
 
 export default function Hero({ onSummaryChange }) {
-  const [activeScent, setActiveScent] = useState(scents[0]);
+  const [activeScent, setActiveScent] = useState(scents[0].name);
   const [activeSize, setActiveSize] = useState(
     sizes.find((s) => s.popular)?.id ?? sizes[0].id
   );
   const [activeImage, setActiveImage] = useState(0);
   const [bundleOn, setBundleOn] = useState(true);
-  const [secondScent, setSecondScent] = useState(scents[1]);
+  const [secondScent, setSecondScent] = useState(scents[1].name);
 
-  const selectedSize = sizes.find((s) => s.id === activeSize);
+  const priceFor = (scentName, sizeId) =>
+    scents.find((s) => s.name === scentName).prices[sizeId];
+
+  const unitPrice = priceFor(activeScent, activeSize);
   const itemCount = bundleOn ? 2 : 1;
-  const totalPrice = selectedSize.price * itemCount;
+  const totalPrice = bundleOn
+    ? unitPrice + priceFor(secondScent, activeSize)
+    : unitPrice;
 
   useEffect(() => {
     onSummaryChange?.({
@@ -105,15 +108,15 @@ export default function Hero({ onSummaryChange }) {
           <div className="mt-3 flex flex-wrap gap-2">
             {scents.map((scent) => (
               <button
-                key={scent}
-                onClick={() => setActiveScent(scent)}
+                key={scent.name}
+                onClick={() => setActiveScent(scent.name)}
                 className={`rounded border px-4 py-2 text-sm transition ${
-                  activeScent === scent
+                  activeScent === scent.name
                     ? "border-sage-deep bg-sage-deep text-cream"
                     : "border-ink/20 text-ink hover:border-ink/50"
                 }`}
               >
-                {scent}
+                {scent.name}
               </button>
             ))}
           </div>
@@ -142,7 +145,7 @@ export default function Hero({ onSummaryChange }) {
                 )}
                 <p className="font-medium">{size.label}</p>
                 <p className="mt-1 text-xs text-ink-soft">{size.note}</p>
-                <p className="mt-2 font-medium">${size.price.toFixed(2)}</p>
+                <p className="mt-2 font-medium">${priceFor(activeScent, size.id).toFixed(2)}</p>
               </button>
             ))}
           </div>
@@ -189,15 +192,15 @@ export default function Hero({ onSummaryChange }) {
               <div className="mt-2 flex flex-wrap gap-2">
                 {scents.map((scent) => (
                   <button
-                    key={scent}
-                    onClick={() => setSecondScent(scent)}
+                    key={scent.name}
+                    onClick={() => setSecondScent(scent.name)}
                     className={`rounded border px-3 py-1.5 text-xs transition ${
-                      secondScent === scent
+                      secondScent === scent.name
                         ? "border-terracotta bg-terracotta text-cream"
                         : "border-ink/20 text-ink hover:border-ink/50"
                     }`}
                   >
-                    {scent}
+                    {scent.name}
                   </button>
                 ))}
               </div>
