@@ -95,21 +95,36 @@ checkoutRouter.post("/checkout", async (req, res) => {
   }
 
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    customer_email: email,
-    line_items: lineItems.map((item) => ({
-      quantity: item.quantity,
-      price_data: {
-        currency: "usd",
-        unit_amount: Math.round(item.unitPrice * 100),
-        product_data: { name: `Natural Room Spray — ${item.scent} (${item.size})` },
-      },
-    })),
-    metadata: { checkoutSessionId: String(checkoutSessionId), eventId },
-    success_url: `${frontendUrl}/order-confirmed?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${frontendUrl}/`,
-  });
+  let session;
+  try {
+    session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      customer_email: email,
+      line_items: lineItems.map((item) => ({
+        quantity: item.quantity,
+        price_data: {
+          currency: "usd",
+          unit_amount: Math.round(item.unitPrice * 100),
+          product_data: { name: `Natural Room Spray — ${item.scent} (${item.size})` },
+        },
+      })),
+      metadata: { checkoutSessionId: String(checkoutSessionId), eventId },
+      // Root path with a query param, not a separate route — this is a
+      // single-page app with no client-side router, so a dedicated path
+      // like /order-confirmed would 404 on most static hosts unless SPA
+      // rewrites are configured. The root always resolves.
+      success_url: `${frontendUrl}/?order=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${frontendUrl}/`,
+    });
+  } catch (err) {
+    // Never leak Stripe's raw error (or a stack trace) to the shopper —
+    // log it for us to debug, show them something calm and actionable.
+    console.error("Stripe session creation failed:", err.message);
+    return res.status(502).json({
+      error: "We couldn't start checkout right now. Please try again in a moment.",
+      code: "checkout_unavailable",
+    });
+  }
 
   db.prepare(`UPDATE checkout_sessions SET stripe_session_id = ? WHERE id = ?`).run(
     session.id,

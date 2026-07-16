@@ -10,10 +10,24 @@ import Testimonials from "./components/Testimonials";
 import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 import StickyCTA from "./components/StickyCTA";
+import OrderConfirmation from "./components/OrderConfirmation";
 
 function App() {
   const [ctaSummary, setCtaSummary] = useState(null);
   const heroRef = useRef(null);
+
+  const isOrderConfirmation =
+    new URLSearchParams(window.location.search).get("order") === "success";
+
+  if (isOrderConfirmation) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <Header />
+        <OrderConfirmation />
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-cream pb-20">

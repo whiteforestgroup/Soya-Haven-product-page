@@ -23,6 +23,20 @@ app.use("/api", subscribeRouter);
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
+// Catch-all error handler — must be last, and must take 4 args for Express
+// to treat it as an error handler. Without this, any unhandled error
+// (a malformed request body, Stripe rejecting a request, etc.) falls
+// through to Express's default HTML error page, which includes a full
+// stack trace and internal file paths in the response body. That's both
+// a poor experience for a real shopper and a real information leak.
+app.use((err, req, res, next) => {
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({ error: "Malformed request body." });
+  }
+  console.error(err);
+  res.status(500).json({ error: "Something went wrong. Please try again." });
+});
+
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
   console.log(`Soya Haven server listening on http://localhost:${port}`);
