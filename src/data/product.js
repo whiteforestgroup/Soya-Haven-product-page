@@ -1,18 +1,4 @@
-const standardPrices = { "4oz": 14.79, "8oz": 24.0 };
-
-export const scents = [
-  { name: "Lemongrass", prices: standardPrices },
-  { name: "Eucalyptus Peppermint", prices: standardPrices },
-  { name: "Sweet Orange", prices: standardPrices },
-  { name: "Bergamot Vanilla", prices: { "4oz": 19.79, "8oz": 28.0 } },
-  { name: "Frankincense", prices: standardPrices },
-  { name: "Rosemary", prices: standardPrices },
-];
-
-export const sizes = [
-  { id: "4oz", label: "4 oz", note: "Perfect for trying a new scent." },
-  { id: "8oz", label: "8 oz", note: "Our best value for everyday use.", popular: true },
-];
+export { scents, sizes, priceFor } from "../../shared/products.js";
 
 export const heroDifferentiators = [
   { title: "Naturally Inspired" },

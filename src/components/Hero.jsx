@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { scents, sizes, heroDifferentiators } from "../data/product";
+import { scents, sizes, heroDifferentiators, priceFor } from "../data/product";
+import { createCheckout } from "../lib/api";
+import { trackPixelEvent } from "../lib/analytics";
 import lemongrassSunflower from "../assets/hero/lemongrass-sunflower.jpg";
 import peppermintDiagonal from "../assets/hero/peppermint-diagonal.jpg";
 import lemongrassSweetOrangePair from "../assets/hero/lemongrass-sweetorange-pair.jpg";
@@ -18,15 +20,49 @@ export default function Hero({ onSummaryChange }) {
   const [activeImage, setActiveImage] = useState(0);
   const [bundleOn, setBundleOn] = useState(true);
   const [secondScent, setSecondScent] = useState(scents[1].name);
-
-  const priceFor = (scentName, sizeId) =>
-    scents.find((s) => s.name === scentName).prices[sizeId];
+  const [email, setEmail] = useState("");
+  const [checkoutStatus, setCheckoutStatus] = useState("idle"); // idle | loading | error | pending-setup
+  const [checkoutMessage, setCheckoutMessage] = useState("");
 
   const unitPrice = priceFor(activeScent, activeSize);
   const itemCount = bundleOn ? 2 : 1;
   const totalPrice = bundleOn
     ? unitPrice + priceFor(secondScent, activeSize)
     : unitPrice;
+
+  async function handleAddToCart() {
+    if (!email || !email.includes("@")) {
+      setCheckoutStatus("error");
+      setCheckoutMessage("Enter a valid email to continue.");
+      return;
+    }
+
+    setCheckoutStatus("loading");
+    setCheckoutMessage("");
+
+    const items = [{ scent: activeScent, size: activeSize, quantity: 1 }];
+    if (bundleOn) items.push({ scent: secondScent, size: activeSize, quantity: 1 });
+
+    const eventId = crypto.randomUUID();
+    trackPixelEvent("InitiateCheckout", { value: totalPrice, currency: "USD" }, eventId);
+
+    try {
+      const data = await createCheckout({ email, items, eventId });
+      window.location.href = data.url;
+    } catch (err) {
+      if (err.code === "stripe_not_configured") {
+        // Stripe isn't connected yet — the cart/email is still saved
+        // server-side, so this isn't a failure from the shopper's view.
+        setCheckoutStatus("pending-setup");
+        setCheckoutMessage(
+          "Thanks! We're finishing checkout setup — we'll email you the moment it's ready."
+        );
+        return;
+      }
+      setCheckoutStatus("error");
+      setCheckoutMessage(err.message);
+    }
+  }
 
   useEffect(() => {
     onSummaryChange?.({
@@ -208,7 +244,7 @@ export default function Hero({ onSummaryChange }) {
           )}
         </div>
 
-        {/* Price + CTA */}
+        {/* Price */}
         <div className="mt-6 flex items-end justify-between">
           <div>
             <p className="text-3xl font-medium text-ink">${totalPrice.toFixed(2)}</p>
@@ -218,14 +254,49 @@ export default function Hero({ onSummaryChange }) {
           </div>
         </div>
 
-        <button className="mt-3 w-full rounded bg-sage-deep py-4 text-sm font-medium tracking-widest text-cream uppercase transition hover:bg-sage-deep-dark">
-          {bundleOn ? "Add 2 to Cart" : "Add to Cart"}
+        {/* Email */}
+        <div className="mt-4">
+          <label htmlFor="checkout-email" className="text-xs font-medium tracking-widest text-ink uppercase">
+            Your Email
+          </label>
+          <input
+            id="checkout-email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="mt-2 w-full rounded border border-ink/20 bg-cream px-4 py-3 text-sm text-ink placeholder:text-ink-soft/50 focus:border-sage-deep focus:ring-0 focus:outline-none"
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          disabled={checkoutStatus === "loading"}
+          className="mt-3 w-full rounded bg-sage-deep py-4 text-sm font-medium tracking-widest text-cream uppercase transition hover:bg-sage-deep-dark disabled:opacity-60"
+        >
+          {checkoutStatus === "loading"
+            ? "Please wait…"
+            : bundleOn
+              ? "Add 2 to Cart"
+              : "Add to Cart"}
         </button>
-        <p className="mt-2 text-center text-[11px] text-ink-soft">
-          {bundleOn
-            ? "🎁 Free shipping applied on your 2-bottle bundle"
-            : "Add a 2nd bottle above for free shipping"}
-        </p>
+        {checkoutMessage ? (
+          <p
+            className={`mt-2 text-center text-xs ${
+              checkoutStatus === "error" ? "text-red-700" : "text-sage-deep"
+            }`}
+          >
+            {checkoutMessage}
+          </p>
+        ) : (
+          <p className="mt-2 text-center text-[11px] text-ink-soft">
+            {bundleOn
+              ? "🎁 Free shipping applied on your 2-bottle bundle"
+              : "Add a 2nd bottle above for free shipping"}
+          </p>
+        )}
       </div>
     </section>
   );
