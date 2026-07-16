@@ -32,7 +32,17 @@ export default function FAQ() {
                     </span>
                   </button>
                   {isOpen && (
-                    <p className="pb-4 text-sm text-ink-soft">{item.a}</p>
+                    <div className="pb-4 text-sm text-ink-soft">
+                      <p>{item.a}</p>
+                      {item.bullets && (
+                        <ul className="mt-2 list-disc space-y-1 pl-5">
+                          {item.bullets.map((bullet) => (
+                            <li key={bullet}>{bullet}</li>
+                          ))}
+                        </ul>
+                      )}
+                      {item.outro && <p className="mt-2">{item.outro}</p>}
+                    </div>
                   )}
                 </div>
               );

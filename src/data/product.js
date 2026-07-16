@@ -72,27 +72,77 @@ export const testimonials = [
 
 export const faqs = [
   {
-    q: "How long does one bottle last?",
-    a: "With regular use (a few sprays per room, a few times a day) an 8 oz bottle lasts approximately 4-6 weeks.",
+    q: "How long does one 4 oz room spray last?",
+    a: "Our 4 oz room sprays are designed to last for months. With 2–3 sprays twice a day, one bottle typically lasts 6–9 months, depending on room size and frequency of use. A little goes a long way!",
   },
   {
-    q: "Is it safe to use around pets?",
-    a: "Yes. Our sprays are made with naturally inspired ingredients and are safe to use in homes with pets when used as directed.",
+    q: "Is Soya Haven Co. Room Spray safe to use around pets?",
+    a: "Our room sprays are made with premium ingredients and high-quality essential oils; however, every pet is different, and some animals can be more sensitive to essential oils than others. For the safety of your pets:",
+    bullets: [
+      "Spray into the air, away from your pet.",
+      "Allow the mist to settle before allowing pets back into the room.",
+      "Never spray directly on pets, their bedding, food, or water.",
+      "If your pet has respiratory conditions or known sensitivities, consult your veterinarian before use.",
+    ],
   },
   {
-    q: "Can I use it on fabrics and linens?",
-    a: "Yes, our room spray is safe for most fabrics. As with any spray, we recommend testing on a small hidden area first.",
+    q: "Can I use the room spray on linens and fabrics?",
+    a: "Yes! Our Room & Linen Sprays are designed for use on:",
+    bullets: ["Bedding", "Pillows", "Curtains", "Upholstery", "Towels", "Blankets", "Fabric furniture"],
+    outro: "We recommend testing on a small, inconspicuous area first, especially on delicate or specialty fabrics.",
   },
   {
-    q: "What are the ingredients?",
-    a: "A simple blend of purified water, pure essential oils, and a plant-derived solubilizer — free from parabens and phthalates.",
+    q: "What ingredients are used?",
+    a: "Our Room & Linen Sprays are handcrafted using:",
+    bullets: ["Premium Room & Linen Spray Base", "High-quality and pure essential oils"],
+    outro: "We do not add dyes or unnecessary fillers.",
   },
   {
-    q: "Where is it made?",
-    a: "Every bottle is handmade in small batches in Virginia, USA.",
+    q: "Where are your products made?",
+    a: "Every Soya Haven Co. product is handcrafted in Virginia, USA, in small batches to ensure exceptional quality and attention to detail.",
   },
   {
     q: "How long does shipping take?",
-    a: "Orders ship within 2-4 business days and typically arrive within a week.",
+    a: "Orders are typically processed within 1–3 business days. Estimated delivery:",
+    bullets: [
+      "Standard Shipping: 3–7 business days",
+      "Tracking information is provided once your order ships.",
+    ],
+    outro:
+      "Need your order sooner? Send us a message before ordering—we'll do our best to accommodate rush requests whenever possible.",
+  },
+  {
+    q: "How many sprays should I use?",
+    a: "Usually 2–3 sprays are enough to freshen an average-sized room. Larger rooms may benefit from a few additional sprays.",
+  },
+  {
+    q: "Are your room sprays made with essential oils?",
+    a: "Most of our collections are made with 100% pure essential oils, while others feature premium fragrance oils carefully selected for their exceptional scent performance. Each product listing clearly identifies which type is used.",
+  },
+  {
+    q: "Are the bottles reusable?",
+    a: "Yes! Our bottles are reusable and recyclable. Many customers enjoy repurposing them for homemade sprays or other household uses after cleaning thoroughly.",
+  },
+  {
+    q: "Do your room sprays make good gifts?",
+    a: "Absolutely! Our elegant packaging and premium fragrances make them wonderful gifts for:",
+    bullets: [
+      "Birthdays",
+      "Weddings",
+      "Housewarmings",
+      "Mother's Day",
+      "Holidays",
+      "Teacher appreciation",
+      "Hostess gifts",
+      "Self-care gift baskets",
+    ],
+  },
+  {
+    q: "Can I request a custom scent?",
+    a: "Yes! We'd love to help create something special. Send us a message before ordering, and we'll let you know if we can accommodate your request.",
+  },
+  {
+    q: "Will the fragrance stain surfaces?",
+    a: "Our sprays are intended for air and fabric use. When used as directed, they should not stain most fabrics, but we always recommend testing on a small hidden area first. Avoid spraying directly onto unfinished wood, leather, silk, suede, or other delicate materials.",
   },
 ];
