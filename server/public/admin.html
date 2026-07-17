@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Soya Haven — Orders</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 24px; background: #f7f2ea; color: #2b241f; }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  .sub { color: #6b6055; font-size: 13px; margin-bottom: 20px; }
+  .token-row { display: flex; gap: 8px; margin-bottom: 20px; }
+  input[type="password"], input[type="text"] { padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; flex: 1; max-width: 320px; }
+  button { padding: 8px 14px; border: none; border-radius: 4px; background: #57654f; color: white; font-size: 13px; cursor: pointer; }
+  button:hover { background: #454f40; }
+  .counts { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .count-card { background: white; border: 1px solid #e5e0d5; border-radius: 6px; padding: 10px 16px; }
+  .count-card .n { font-size: 22px; font-weight: 600; }
+  .count-card .l { font-size: 11px; text-transform: uppercase; color: #6b6055; letter-spacing: 0.05em; }
+  table { width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #efe7d9; font-size: 13px; }
+  th { background: #efe7d9; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #6b6055; }
+  .status { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; text-transform: uppercase; }
+  .status-completed { background: #dfe7db; color: #454f40; }
+  .status-started { background: #f0e6d8; color: #8a6d23; }
+  .status-abandoned, .status-expired { background: #f3e0d5; color: #a05a2c; }
+  #error { color: #b91c1c; font-size: 13px; margin-bottom: 12px; }
+  #empty { color: #6b6055; font-size: 13px; padding: 20px; text-align: center; }
+</style>
+</head>
+<body>
+  <h1>Soya Haven Co. — Orders</h1>
+  <p class="sub">Read-only view of checkout activity. Not for editing/fulfillment workflows.</p>
+
+  <div class="token-row">
+    <input type="password" id="token" placeholder="Admin token" />
+    <button onclick="saveTokenAndLoad()">Load</button>
+  </div>
+
+  <div id="error"></div>
+  <div class="counts" id="counts"></div>
+  <div id="tableWrap"></div>
+
+  <script>
+    const tokenInput = document.getElementById("token");
+    const stored = localStorage.getItem("soyaHavenAdminToken");
+    if (stored) tokenInput.value = stored;
+
+    function saveTokenAndLoad() {
+      localStorage.setItem("soyaHavenAdminToken", tokenInput.value);
+      load();
+    }
+
+    async function load() {
+      const token = tokenInput.value.trim();
+      const errorEl = document.getElementById("error");
+      const countsEl = document.getElementById("counts");
+      const tableWrap = document.getElementById("tableWrap");
+      errorEl.textContent = "";
+      countsEl.innerHTML = "";
+      tableWrap.innerHTML = "";
+
+      if (!token) return;
+
+      try {
+        const res = await fetch("/api/admin/orders", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          errorEl.textContent = data.error || "Failed to load.";
+          return;
+        }
+
+        countsEl.innerHTML =
+          data.counts
+            .map(function (c) {
+              return (
+                '<div class="count-card"><div class="n">' +
+                c.count +
+                '</div><div class="l">' +
+                c.status +
+                "</div></div>"
+              );
+            })
+            .join("") +
+          '<div class="count-card"><div class="n">' +
+          data.subscriberCount +
+          '</div><div class="l">subscribers</div></div>';
+
+        if (data.sessions.length === 0) {
+          tableWrap.innerHTML = '<div id="empty">No checkout activity yet.</div>';
+          return;
+        }
+
+        const rows = data.sessions
+          .map(function (s) {
+            const items = s.cart
+              .map(function (i) {
+                return i.scent + " (" + i.size + ") x" + i.quantity;
+              })
+              .join(", ");
+            return (
+              "<tr><td>" +
+              new Date(s.created_at + "Z").toLocaleString() +
+              "</td><td>" +
+              s.email +
+              "</td><td>" +
+              items +
+              "</td><td>$" +
+              s.total_amount.toFixed(2) +
+              '</td><td><span class="status status-' +
+              s.status +
+              '">' +
+              s.status +
+              "</span></td></tr>"
+            );
+          })
+          .join("");
+
+        tableWrap.innerHTML =
+          "<table><thead><tr><th>Date</th><th>Email</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody>" +
+          rows +
+          "</tbody></table>";
+      } catch (err) {
+        errorEl.textContent = "Couldn't reach the server: " + err.message;
+      }
+    }
+
+    if (stored) load();
+  </script>
+</body>
+</html>

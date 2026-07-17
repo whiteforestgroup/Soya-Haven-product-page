@@ -14,3 +14,16 @@ export async function createCheckout({ email, items, eventId }) {
   }
   return data;
 }
+
+export async function subscribeEmail({ email, source }) {
+  const res = await fetch(`${API_URL}/api/subscribe`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, source }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || "Something went wrong subscribing.");
+  }
+  return data;
+}

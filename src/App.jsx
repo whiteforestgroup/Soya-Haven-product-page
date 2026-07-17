@@ -11,19 +11,39 @@ import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 import StickyCTA from "./components/StickyCTA";
 import OrderConfirmation from "./components/OrderConfirmation";
+import ShippingReturns from "./pages/ShippingReturns";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+
+const staticPages = {
+  "shipping-returns": ShippingReturns,
+  "privacy-policy": PrivacyPolicy,
+  terms: TermsOfService,
+};
 
 function App() {
   const [ctaSummary, setCtaSummary] = useState(null);
   const heroRef = useRef(null);
 
-  const isOrderConfirmation =
-    new URLSearchParams(window.location.search).get("order") === "success";
+  const params = new URLSearchParams(window.location.search);
+  const isOrderConfirmation = params.get("order") === "success";
+  const PageComponent = staticPages[params.get("page")];
 
   if (isOrderConfirmation) {
     return (
       <div className="min-h-screen bg-cream">
         <Header />
         <OrderConfirmation />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (PageComponent) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <Header />
+        <PageComponent />
         <Footer />
       </div>
     );

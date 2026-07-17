@@ -1,15 +1,23 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { checkoutRouter } from "./routes/checkout.js";
 import { webhookRouter } from "./routes/webhook.js";
 import { subscribeRouter } from "./routes/subscribe.js";
+import { adminRouter } from "./routes/admin.js";
 import { startAbandonedCartJob } from "./jobs/abandonedCart.js";
 import "./db.js"; // ensures tables exist on boot
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173" }));
+
+// Admin dashboard — a plain static HTML/JS page, not part of the React app.
+// Protected by ADMIN_TOKEN checked in routes/admin.js, not by obscurity.
+app.use(express.static(path.join(__dirname, "..", "public")));
 
 // Stripe webhook needs the raw request body (not JSON-parsed) to verify
 // the signature, so this is mounted with express.raw() before the global
@@ -20,6 +28,7 @@ app.use("/api", webhookRouter);
 app.use(express.json());
 app.use("/api", checkoutRouter);
 app.use("/api", subscribeRouter);
+app.use("/api", adminRouter);
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
