@@ -122,7 +122,7 @@ export default function Hero({ onSummaryChange }) {
           that turns any room into your happy place in seconds.
         </p>
 
-        <div className="mt-4 inline-flex w-fit items-center rounded-full bg-terracotta px-4 py-2 text-sm font-semibold tracking-wide text-cream">
+        <div className="mt-4 inline-flex w-fit items-center rounded-full border-2 border-terracotta px-4 py-2 text-sm font-bold tracking-wide text-terracotta uppercase">
           No Flames, Plugs, or Electricity Required
         </div>
 

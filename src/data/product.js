@@ -27,8 +27,8 @@ export const whyUs = [
     body: "Preserves fragrance quality and looks beautiful in your home.",
   },
   {
-    title: "Environmentally Friendly",
-    body: "Recyclable amber glass bottles you can feel good about.",
+    title: "Long-Lasting Value",
+    body: "A 4 oz bottle lasts 6–9 months with regular use — a little goes a long way.",
   },
   {
     title: "Eliminates Odors Naturally",
@@ -47,7 +47,7 @@ export const ingredientValues = [
   },
   {
     title: "Handcrafted",
-    body: "Handmade in small batches with care and intention.",
+    body: "Every bottle is filled and labeled by hand — never mass-produced.",
   },
 ];
 
