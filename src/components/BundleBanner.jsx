@@ -1,10 +1,23 @@
-import bundleLifestyle from "../assets/sections/bundle-lifestyle.jpg";
+import bundleVideo from "../assets/video/bundle-tray.mp4";
+import bundlePoster from "../assets/video/bundle-tray-poster.jpg";
 
 export default function BundleBanner() {
   return (
-    <section className="bg-espresso text-cream">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-14 md:grid-cols-2 md:px-6">
-        <div>
+    <section className="relative overflow-hidden text-cream">
+      <video
+        className="absolute inset-0 h-full w-full object-cover"
+        src={bundleVideo}
+        poster={bundlePoster}
+        autoPlay
+        muted
+        loop
+        playsInline
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-espresso/90 via-espresso/70 to-espresso/30" />
+
+      <div className="relative mx-auto max-w-6xl px-4 py-20 md:px-6">
+        <div className="max-w-sm">
           <h2 className="font-display text-4xl">Better Together</h2>
           <p className="mt-2 text-cream/70">
             One for you, one to gift — mix, match, and save on shipping.
@@ -24,12 +37,6 @@ export default function BundleBanner() {
             </div>
           </div>
         </div>
-
-        <img
-          src={bundleLifestyle}
-          alt="Three Soya Haven room sprays and the brand card in a wooden tray"
-          className="aspect-[4/3] w-full rounded object-cover"
-        />
       </div>
     </section>
   );

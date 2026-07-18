@@ -5,11 +5,14 @@ import { trackPixelEvent } from "../lib/analytics";
 import lemongrassSunflower from "../assets/hero/lemongrass-sunflower.jpg";
 import peppermintDiagonal from "../assets/hero/peppermint-diagonal.jpg";
 import lemongrassSweetOrangePair from "../assets/hero/lemongrass-sweetorange-pair.jpg";
+import bundleVideo from "../assets/video/bundle-tray.mp4";
+import bundlePoster from "../assets/video/bundle-tray-poster.jpg";
 
-const galleryImages = [
-  { src: lemongrassSunflower, alt: "Soya Haven Lemongrass room spray with sunflower and greenery" },
-  { src: peppermintDiagonal, alt: "Soya Haven Eucalyptus Peppermint room spray on a bed" },
-  { src: lemongrassSweetOrangePair, alt: "Soya Haven Lemongrass and Sweet Orange room sprays side by side" },
+const galleryItems = [
+  { type: "image", src: lemongrassSunflower, alt: "Soya Haven Lemongrass room spray with sunflower and greenery" },
+  { type: "image", src: peppermintDiagonal, alt: "Soya Haven Eucalyptus Peppermint room spray on a bed" },
+  { type: "image", src: lemongrassSweetOrangePair, alt: "Soya Haven Lemongrass and Sweet Orange room sprays side by side" },
+  { type: "video", src: bundleVideo, poster: bundlePoster, alt: "Soya Haven room sprays on a wooden tray" },
 ];
 
 export default function Hero({ onSummaryChange }) {
@@ -65,8 +68,9 @@ export default function Hero({ onSummaryChange }) {
   }
 
   useEffect(() => {
+    const item = galleryItems[activeImage];
     onSummaryChange?.({
-      image: galleryImages[activeImage].src,
+      image: item.type === "video" ? item.poster : item.src,
       scent: activeScent,
       totalPrice,
       itemCount,
@@ -78,28 +82,49 @@ export default function Hero({ onSummaryChange }) {
       {/* Gallery */}
       <div>
         <div className="relative overflow-hidden rounded">
-          <img
-            src={galleryImages[activeImage].src}
-            alt={galleryImages[activeImage].alt}
-            className="aspect-[4/5] w-full object-cover"
-          />
-          <button
-            aria-label="Play product video"
-            className="absolute top-4 left-4 flex h-10 w-10 items-center justify-center rounded-full bg-cream/90 shadow"
-          >
-            <span className="ml-0.5 h-0 w-0 border-y-6 border-l-9 border-y-transparent border-l-ink" />
-          </button>
+          {galleryItems[activeImage].type === "video" ? (
+            <video
+              key={galleryItems[activeImage].src}
+              className="aspect-[4/5] w-full object-cover"
+              poster={galleryItems[activeImage].poster}
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls
+            >
+              <source src={galleryItems[activeImage].src} type="video/mp4" />
+            </video>
+          ) : (
+            <img
+              src={galleryItems[activeImage].src}
+              alt={galleryItems[activeImage].alt}
+              className="aspect-[4/5] w-full object-cover"
+            />
+          )}
         </div>
         <div className="mt-3 flex gap-2">
-          {galleryImages.map((img, i) => (
+          {galleryItems.map((item, i) => (
             <button
-              key={img.src}
+              key={item.src}
               onClick={() => setActiveImage(i)}
-              className={`aspect-square w-full max-w-20 overflow-hidden rounded border transition ${
+              aria-label={item.type === "video" ? "Play product video" : item.alt}
+              className={`relative aspect-square w-full max-w-20 overflow-hidden rounded border transition ${
                 activeImage === i ? "border-ink" : "border-transparent"
               }`}
             >
-              <img src={img.src} alt={img.alt} className="h-full w-full object-cover" />
+              <img
+                src={item.type === "video" ? item.poster : item.src}
+                alt={item.alt}
+                className="h-full w-full object-cover"
+              />
+              {item.type === "video" && (
+                <span className="absolute inset-0 flex items-center justify-center bg-ink/20">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-cream/90">
+                    <span className="ml-0.5 h-0 w-0 border-y-4 border-l-6 border-y-transparent border-l-ink" />
+                  </span>
+                </span>
+              )}
             </button>
           ))}
         </div>
