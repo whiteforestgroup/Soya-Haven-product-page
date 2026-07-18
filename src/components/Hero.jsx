@@ -119,9 +119,12 @@ export default function Hero({ onSummaryChange }) {
 
         <p className="mt-4 max-w-md text-[15px] leading-relaxed text-ink-soft">
           A handcrafted room spray made with naturally inspired ingredients
-          that turns any room into your happy place in seconds — no flames,
-          plugs, or electricity required.
+          that turns any room into your happy place in seconds.
         </p>
+
+        <div className="mt-4 inline-flex w-fit items-center rounded-full bg-terracotta px-4 py-2 text-sm font-semibold tracking-wide text-cream">
+          No Flames, Plugs, or Electricity Required
+        </div>
 
         <div className="mt-5 flex gap-6">
           {heroDifferentiators.map((d, i) => (

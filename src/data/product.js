@@ -7,7 +7,7 @@ export const heroDifferentiators = [
 
 export const trustBadges = [
   "Free Sample Included",
-  "Ships in 2-4 Days",
+  "Ships in 3-7 Business Days",
   "Amber Glass Bottle",
   "Flame Free Fragrance",
   "Handmade in Small Batches",
