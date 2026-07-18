@@ -51,22 +51,14 @@ export const ingredientValues = [
   },
 ];
 
+// Real customer reviews only — specifically about a room/linen spray, not
+// pulled from reviews of other products (wax melts, etc.) that happen to
+// read generically. See conversation notes before adding more.
 export const testimonials = [
   {
-    quote: "My house smells incredible. The scents are clean and not overpowering.",
-    name: "Jessica M.",
-  },
-  {
-    quote: "Finally a room spray that actually makes a difference. Obsessed with the bottles!",
-    name: "Danielle R.",
-  },
-  {
-    quote: "I use this in every room daily. Guests always ask what smells so good.",
-    name: "Amanda T.",
-  },
-  {
-    quote: "High quality, beautiful scents and the packaging is perfect.",
-    name: "Lauren P.",
+    quote:
+      "This is perfect for helping naturally keep the aphids out of my daughter's room. The customer service is amazing!",
+    name: "Melinda",
   },
 ];
 

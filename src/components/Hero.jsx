@@ -134,7 +134,7 @@ export default function Hero({ onSummaryChange }) {
       <div className="flex flex-col justify-center">
         <div className="flex items-center gap-2 text-sm text-ink-soft">
           <span className="tracking-widest text-gold">★★★★★</span>
-          <span>4.9/5 from 250+ happy customers</span>
+          <span>5.0 Rated by Our Customers</span>
         </div>
 
         <h2 className="font-display mt-3 text-5xl leading-tight text-ink">

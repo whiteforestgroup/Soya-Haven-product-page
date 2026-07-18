@@ -8,10 +8,13 @@ const standardPrices = { "4oz": 14.79, "8oz": 24.0 };
 export const scents = [
   { name: "Lemongrass", prices: standardPrices },
   { name: "Eucalyptus Peppermint", prices: standardPrices },
+  { name: "Peppermint", prices: standardPrices },
   { name: "Sweet Orange", prices: standardPrices },
   { name: "Bergamot Vanilla", prices: { "4oz": 19.79, "8oz": 28.0 } },
   { name: "Frankincense", prices: standardPrices },
   { name: "Rosemary", prices: standardPrices },
+  { name: "Tea Tree", prices: standardPrices },
+  { name: "Lavandin", prices: standardPrices },
 ];
 
 export const sizes = [
