@@ -5,6 +5,7 @@ import { trackPixelEvent } from "../lib/analytics";
 import lemongrassSunflower from "../assets/hero/lemongrass-sunflower.jpg";
 import peppermintDiagonal from "../assets/hero/peppermint-diagonal.jpg";
 import lemongrassSweetOrangePair from "../assets/hero/lemongrass-sweetorange-pair.jpg";
+import lavandinHand from "../assets/hero/lavandin-hand.jpg";
 import bundleVideo from "../assets/video/bundle-tray.mp4";
 import bundlePoster from "../assets/video/bundle-tray-poster.jpg";
 
@@ -12,6 +13,7 @@ const galleryItems = [
   { type: "image", src: lemongrassSunflower, alt: "Soya Haven Lemongrass room spray with sunflower and greenery" },
   { type: "image", src: peppermintDiagonal, alt: "Soya Haven Eucalyptus Peppermint room spray on a bed" },
   { type: "image", src: lemongrassSweetOrangePair, alt: "Soya Haven Lemongrass and Sweet Orange room sprays side by side" },
+  { type: "image", src: lavandinHand, alt: "Hand holding Soya Haven Lavandin room spray" },
   { type: "video", src: bundleVideo, poster: bundlePoster, alt: "Soya Haven room sprays on a wooden tray" },
 ];
 

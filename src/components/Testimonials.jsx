@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { testimonials } from "../data/product";
 
-const perPage = 4;
+const perPage = 8;
 
 export default function Testimonials() {
   const [page, setPage] = useState(0);
@@ -27,12 +27,9 @@ export default function Testimonials() {
 
           <div className="flex flex-1 flex-wrap justify-center gap-8">
             {visible.map((t) => (
-              <div key={t.name} className="flex w-full max-w-xs flex-col items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-terracotta/20 text-sm font-medium text-terracotta">
-                  {t.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
+              <div key={t.quote} className="flex w-full max-w-xs flex-col items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-terracotta/20 text-terracotta">
+                  ✓
                 </span>
                 <span className="tracking-widest text-gold">★★★★★</span>
                 <p className="text-sm text-ink">"{t.quote}"</p>

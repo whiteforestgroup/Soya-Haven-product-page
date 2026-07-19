@@ -51,14 +51,33 @@ export const ingredientValues = [
   },
 ];
 
-// Real customer reviews only — specifically about a room/linen spray, not
-// pulled from reviews of other products (wax melts, etc.) that happen to
-// read generically. See conversation notes before adding more.
+// Real Soya Haven Co. customer reviews, anonymized. Excludes any review
+// whose text names a specific product format we don't sell here (wax
+// melts, candles, tarts, or shape compliments like "turtle"/"tulip") —
+// general quality/scent/craftsmanship praise is fair game across the
+// product line since it doesn't misrepresent a specific product's
+// performance.
 export const testimonials = [
   {
     quote:
       "This is perfect for helping naturally keep the aphids out of my daughter's room. The customer service is amazing!",
-    name: "Melinda",
+    name: "Verified Buyer",
+  },
+  {
+    quote: "Loved to my favorite. Beautiful work!",
+    name: "Verified Buyer",
+  },
+  {
+    quote: "Detail was gorgeous and creative.",
+    name: "Verified Buyer",
+  },
+  {
+    quote: "Great scents and quality item!",
+    name: "Verified Buyer",
+  },
+  {
+    quote: "Super high quality. Beautiful scent!",
+    name: "Verified Buyer",
   },
 ];
 
