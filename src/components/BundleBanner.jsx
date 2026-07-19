@@ -1,4 +1,5 @@
-import bundleVideo from "../assets/video/bundle-tray.mp4";
+import bundleVideoMp4 from "../assets/video/bundle-tray.mp4";
+import bundleVideoWebm from "../assets/video/bundle-tray.webm";
 import bundlePoster from "../assets/video/bundle-tray-poster.jpg";
 
 export default function BundleBanner() {
@@ -6,14 +7,16 @@ export default function BundleBanner() {
     <section className="relative overflow-hidden text-cream">
       <video
         className="absolute inset-0 h-full w-full object-cover"
-        src={bundleVideo}
         poster={bundlePoster}
         autoPlay
         muted
         loop
         playsInline
         aria-hidden="true"
-      />
+      >
+        <source src={bundleVideoMp4} type="video/mp4" />
+        <source src={bundleVideoWebm} type="video/webm" />
+      </video>
       <div className="absolute inset-0 bg-gradient-to-r from-espresso/90 via-espresso/70 to-espresso/30" />
 
       <div className="relative mx-auto max-w-6xl px-4 py-20 md:px-6">

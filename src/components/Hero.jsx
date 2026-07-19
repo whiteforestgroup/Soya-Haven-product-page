@@ -6,7 +6,8 @@ import lemongrassSunflower from "../assets/hero/lemongrass-sunflower.jpg";
 import peppermintDiagonal from "../assets/hero/peppermint-diagonal.jpg";
 import lemongrassSweetOrangePair from "../assets/hero/lemongrass-sweetorange-pair.jpg";
 import lavandinHand from "../assets/hero/lavandin-hand.jpg";
-import bundleVideo from "../assets/video/bundle-tray.mp4";
+import bundleVideoMp4 from "../assets/video/bundle-tray.mp4";
+import bundleVideoWebm from "../assets/video/bundle-tray.webm";
 import bundlePoster from "../assets/video/bundle-tray-poster.jpg";
 
 const galleryItems = [
@@ -14,7 +15,15 @@ const galleryItems = [
   { type: "image", src: peppermintDiagonal, alt: "Soya Haven Eucalyptus Peppermint room spray on a bed" },
   { type: "image", src: lemongrassSweetOrangePair, alt: "Soya Haven Lemongrass and Sweet Orange room sprays side by side" },
   { type: "image", src: lavandinHand, alt: "Hand holding Soya Haven Lavandin room spray" },
-  { type: "video", src: bundleVideo, poster: bundlePoster, alt: "Soya Haven room sprays on a wooden tray" },
+  {
+    type: "video",
+    sources: [
+      { src: bundleVideoMp4, type: "video/mp4" },
+      { src: bundleVideoWebm, type: "video/webm" },
+    ],
+    poster: bundlePoster,
+    alt: "Soya Haven room sprays on a wooden tray",
+  },
 ];
 
 export default function Hero({ onSummaryChange }) {
@@ -86,7 +95,7 @@ export default function Hero({ onSummaryChange }) {
         <div className="relative overflow-hidden rounded">
           {galleryItems[activeImage].type === "video" ? (
             <video
-              key={galleryItems[activeImage].src}
+              key="hero-video"
               className="aspect-[4/5] w-full object-cover"
               poster={galleryItems[activeImage].poster}
               autoPlay
@@ -95,7 +104,9 @@ export default function Hero({ onSummaryChange }) {
               playsInline
               controls
             >
-              <source src={galleryItems[activeImage].src} type="video/mp4" />
+              {galleryItems[activeImage].sources.map((s) => (
+                <source key={s.src} src={s.src} type={s.type} />
+              ))}
             </video>
           ) : (
             <img
@@ -108,7 +119,7 @@ export default function Hero({ onSummaryChange }) {
         <div className="mt-3 flex gap-2">
           {galleryItems.map((item, i) => (
             <button
-              key={item.src}
+              key={item.type === "video" ? "video" : item.src}
               onClick={() => setActiveImage(i)}
               aria-label={item.type === "video" ? "Play product video" : item.alt}
               className={`relative aspect-square w-full max-w-20 overflow-hidden rounded border transition ${
