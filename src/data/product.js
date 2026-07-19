@@ -51,24 +51,20 @@ export const ingredientValues = [
   },
 ];
 
-// Real Soya Haven Co. customer reviews, anonymized. Excludes any review
-// whose text names a specific product format we don't sell here (wax
-// melts, candles, tarts, or shape compliments like "turtle"/"tulip") —
-// general quality/scent/craftsmanship praise is fair game across the
-// product line since it doesn't misrepresent a specific product's
-// performance.
+// Real Soya Haven Co. customer reviews, anonymized. Final list confirmed
+// by the client.
 export const testimonials = [
   {
     quote:
-      "This is perfect for helping naturally keep the aphids out of my daughter's room. The customer service is amazing!",
+      "This is perfect for helping naturally keep the spiders out of my daughter's room. The customer service is amazing!!",
     name: "Verified Buyer",
   },
   {
-    quote: "Loved to my favorite. Beautiful work!",
+    quote: "Super high quality. Beautiful scent!",
     name: "Verified Buyer",
   },
   {
-    quote: "Detail was gorgeous and creative.",
+    quote: "Detail was gorgeous and creative",
     name: "Verified Buyer",
   },
   {
@@ -76,7 +72,8 @@ export const testimonials = [
     name: "Verified Buyer",
   },
   {
-    quote: "Super high quality. Beautiful scent!",
+    quote:
+      "They are so cute and beautiful. They smell so good! Packed and shipping was done very well!",
     name: "Verified Buyer",
   },
 ];

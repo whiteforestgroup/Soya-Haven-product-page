@@ -11,10 +11,6 @@ import bundleVideoWebm from "../assets/video/bundle-tray.webm";
 import bundlePoster from "../assets/video/bundle-tray-poster.jpg";
 
 const galleryItems = [
-  { type: "image", src: lemongrassSunflower, alt: "Soya Haven Lemongrass room spray with sunflower and greenery" },
-  { type: "image", src: peppermintDiagonal, alt: "Soya Haven Eucalyptus Peppermint room spray on a bed" },
-  { type: "image", src: lemongrassSweetOrangePair, alt: "Soya Haven Lemongrass and Sweet Orange room sprays side by side" },
-  { type: "image", src: lavandinHand, alt: "Hand holding Soya Haven Lavandin room spray" },
   {
     type: "video",
     sources: [
@@ -24,6 +20,10 @@ const galleryItems = [
     poster: bundlePoster,
     alt: "Soya Haven room sprays on a wooden tray",
   },
+  { type: "image", src: lemongrassSunflower, alt: "Soya Haven Lemongrass room spray with sunflower and greenery" },
+  { type: "image", src: peppermintDiagonal, alt: "Soya Haven Eucalyptus Peppermint room spray on a bed" },
+  { type: "image", src: lemongrassSweetOrangePair, alt: "Soya Haven Lemongrass and Sweet Orange room sprays side by side" },
+  { type: "image", src: lavandinHand, alt: "Hand holding Soya Haven Lavandin room spray" },
 ];
 
 export default function Hero({ onSummaryChange }) {
