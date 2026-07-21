@@ -9,6 +9,6 @@ export const business = {
   contactEmail: "", // TODO: e.g. "hello@yourdomain.com" — required before launch
   instagramHandle: "", // TODO: e.g. "soyahavenco" (no @)
   instagramUrl: "", // TODO: full profile URL
-  location: "Virginia, USA", // from your product labels ("Made in the Rappahannock")
-  mailingAddress: "", // TODO: required for CAN-SPAM compliance on marketing emails
+  location: "Fredericksburg, Virginia",
+  mailingAddress: "16 Lichfield Blvd Unit 5127, Fredericksburg, VA 22403",
 };

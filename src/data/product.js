@@ -1,4 +1,4 @@
-export { scents, sizes, priceFor } from "../../shared/products.js";
+export { scents, sizes, priceFor, shippingFor } from "../../shared/products.js";
 
 export const heroDifferentiators = [
   { title: "Naturally Inspired" },
@@ -111,9 +111,9 @@ export const faqs = [
   },
   {
     q: "How long does shipping take?",
-    a: "Orders are typically processed within 1–3 business days. Estimated delivery:",
+    a: "Room Spray orders are processed within 3 days. Estimated delivery:",
     bullets: [
-      "Standard Shipping: 3–7 business days",
+      "Standard Shipping: 3–7 business days ($6.95, free on orders of 2+ bottles)",
       "Tracking information is provided once your order ships.",
     ],
     outro:

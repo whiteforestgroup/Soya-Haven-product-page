@@ -2,7 +2,7 @@ import express from "express";
 import Stripe from "stripe";
 import { randomUUID } from "node:crypto";
 import { db } from "../db.js";
-import { priceFor } from "../../../shared/products.js";
+import { priceFor, shippingFor } from "../../../shared/products.js";
 import { klaviyo } from "../integrations/klaviyo.js";
 import { meta } from "../integrations/meta.js";
 
@@ -41,10 +41,10 @@ checkoutRouter.post("/checkout", async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 
-  const totalAmount = lineItems.reduce(
-    (sum, item) => sum + item.unitPrice * item.quantity,
-    0
-  );
+  const subtotal = lineItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+  const totalQuantity = lineItems.reduce((sum, item) => sum + item.quantity, 0);
+  const shippingAmount = shippingFor(totalQuantity);
+  const totalAmount = subtotal + shippingAmount;
   const cartJson = JSON.stringify(lineItems);
   // Reuse the browser pixel's event ID when provided, so the client-side
   // InitiateCheckout event and this server-side one dedupe as a single
@@ -109,6 +109,17 @@ checkoutRouter.post("/checkout", async (req, res) => {
         },
       })),
       metadata: { checkoutSessionId: String(checkoutSessionId), eventId },
+      // We ship within the US only for now — revisit if that changes.
+      shipping_address_collection: { allowed_countries: ["US"] },
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: { amount: Math.round(shippingAmount * 100), currency: "usd" },
+            display_name: shippingAmount === 0 ? "Free Shipping" : "Standard Shipping",
+          },
+        },
+      ],
       // Root path with a query param, not a separate route — this is a
       // single-page app with no client-side router, so a dedicated path
       // like /order-confirmed would 404 on most static hosts unless SPA

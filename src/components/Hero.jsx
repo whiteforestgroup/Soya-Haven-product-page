@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { scents, sizes, heroDifferentiators, priceFor } from "../data/product";
+import { scents, sizes, heroDifferentiators, priceFor, shippingFor } from "../data/product";
 import { createCheckout } from "../lib/api";
 import { trackPixelEvent } from "../lib/analytics";
 import lemongrassSunflower from "../assets/hero/lemongrass-sunflower.jpg";
@@ -40,9 +40,9 @@ export default function Hero({ onSummaryChange }) {
 
   const unitPrice = priceFor(activeScent, activeSize);
   const itemCount = bundleOn ? 2 : 1;
-  const totalPrice = bundleOn
-    ? unitPrice + priceFor(secondScent, activeSize)
-    : unitPrice;
+  const subtotal = bundleOn ? unitPrice + priceFor(secondScent, activeSize) : unitPrice;
+  const shippingCost = shippingFor(itemCount);
+  const totalPrice = subtotal + shippingCost;
 
   async function handleAddToCart() {
     if (!email || !email.includes("@")) {
@@ -289,8 +289,12 @@ export default function Hero({ onSummaryChange }) {
         <div className="mt-6 flex items-end justify-between">
           <div>
             <p className="text-3xl font-medium text-ink">${totalPrice.toFixed(2)}</p>
-            {bundleOn && (
+            {bundleOn ? (
               <p className="text-xs text-sage-deep">2 bottles · free shipping included</p>
+            ) : (
+              <p className="text-xs text-ink-soft">
+                ${subtotal.toFixed(2)} + ${shippingCost.toFixed(2)} shipping
+              </p>
             )}
           </div>
         </div>

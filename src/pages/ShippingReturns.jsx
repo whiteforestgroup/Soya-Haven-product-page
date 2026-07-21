@@ -1,39 +1,27 @@
 import StaticPage from "../components/StaticPage";
-import { business } from "../data/business";
 
 export default function ShippingReturns() {
   return (
-    <StaticPage title="Shipping & Returns" draft>
+    <StaticPage title="Shipping & Returns">
       <h2 className="font-display text-xl text-ink">Processing Time</h2>
-      <p>Orders are typically processed within 1–3 business days before shipping.</p>
+      <p>Room Spray orders are processed within 3 days before shipping.</p>
 
       <h2 className="font-display text-xl text-ink">Shipping</h2>
       <p>
-        Standard Shipping: 3–7 business days. Tracking information is provided once
-        your order ships.
-      </p>
-      <p>
-        Need your order sooner? Contact us before ordering
-        {business.contactEmail ? ` at ${business.contactEmail}` : ""} and we'll do our
-        best to accommodate rush requests whenever possible.
+        Standard shipping is $6.95 for a single bottle. Any order of 2 or more
+        bottles ships free. Tracking information is provided once your order
+        ships.
       </p>
 
-      <h2 className="font-display text-xl text-ink">Returns & Exchanges</h2>
+      <h2 className="font-display text-xl text-ink">Returns &amp; Exchanges</h2>
       <p>
-        Because our room and linen sprays are handmade and consumable, we're unable to
-        accept returns or exchanges once an order has shipped, except in the case of
-        items that arrive damaged or defective.
+        Due to the nature of our handmade products, we do not accept returns
+        or exchanges unless an item arrives damaged or the wrong item was
+        received.
       </p>
       <p>
-        If your order arrives damaged, please contact us within 7 days of delivery
-        with photos of the damage, and we'll make it right with a replacement or
-        refund.
-      </p>
-
-      <p className="text-xs italic">
-        [Draft note: return window and policy specifics above are a suggested
-        starting point for a handmade cosmetic/fragrance goods business — confirm
-        these terms before publishing.]
+        If your order arrives damaged, please contact us within 7 days of
+        delivery with photos so we can assist you.
       </p>
     </StaticPage>
   );

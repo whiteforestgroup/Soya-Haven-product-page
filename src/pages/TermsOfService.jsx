@@ -1,56 +1,64 @@
 import StaticPage from "../components/StaticPage";
-import { business } from "../data/business";
 
 export default function TermsOfService() {
   return (
-    <StaticPage title="Terms of Service" draft>
-      <p className="text-xs italic">
-        [Draft note: standard small-business starting template, not legal
-        advice — have it reviewed before publishing.]
-      </p>
+    <StaticPage title="Terms & Conditions">
+      <p className="text-xs text-ink-soft">Effective Date: July 20, 2026</p>
 
-      <h2 className="font-display text-xl text-ink">Orders & Payment</h2>
       <p>
-        By placing an order, you agree to provide accurate purchase and account
-        information. All payments are processed securely through Stripe. We
-        reserve the right to cancel or refuse any order.
+        Welcome to Soya Haven Co. By purchasing our products, you agree to the
+        following terms.
       </p>
 
-      <h2 className="font-display text-xl text-ink">Product Descriptions</h2>
+      <h2 className="font-display text-xl text-ink">Orders</h2>
       <p>
-        We do our best to describe our products, ingredients, and scents
-        accurately. Colors and scent descriptions may vary slightly from what
-        you experience, as these are handmade, small-batch products.
+        All products are handmade and may have slight variations in color,
+        design, or appearance. These differences make each item unique.
       </p>
 
-      <h2 className="font-display text-xl text-ink">Use of This Site</h2>
+      <h2 className="font-display text-xl text-ink">Shipping</h2>
       <p>
-        You agree to use this site only for lawful purposes. All content on
-        this site — including text, images, and the Soya Haven Co. name and
-        logo — is our property and may not be used without permission.
+        Orders are processed within our stated processing time. Shipping times
+        may vary depending on the carrier and destination.
       </p>
 
-      <h2 className="font-display text-xl text-ink">Limitation of Liability</h2>
+      <h2 className="font-display text-xl text-ink">Returns &amp; Exchanges</h2>
       <p>
-        Our products are intended for use as directed. We are not liable for
-        misuse, allergic reactions, or damage resulting from failure to follow
-        usage instructions. See our product labels and FAQ for safe-use
-        guidance, including around pets and on delicate fabrics.
+        Due to the nature of our handmade products, we do not accept returns
+        or exchanges unless an item arrives damaged or the wrong item was
+        received.
       </p>
-
-      <h2 className="font-display text-xl text-ink">Changes to These Terms</h2>
-      <p>We may update these terms from time to time. Continued use of the site means you accept the current version.</p>
-
-      <h2 className="font-display text-xl text-ink">Governing Law</h2>
-      <p>These terms are governed by the laws of the Commonwealth of Virginia, USA.</p>
-
-      <h2 className="font-display text-xl text-ink">Contact</h2>
       <p>
-        Questions about these terms? Reach us
-        {business.contactEmail ? ` at ${business.contactEmail}` : " — contact details coming soon"}.
+        If your order arrives damaged, please contact us within 7 days of
+        delivery with photos so we can assist you.
       </p>
 
-      <p className="text-xs text-ink-soft">Last updated: [add date when published]</p>
+      <h2 className="font-display text-xl text-ink">Product Use</h2>
+      <p>
+        Our products are intended for their designated purpose only. Please
+        follow all included safety instructions. Soya Haven Co. is not
+        responsible for misuse of our products.
+      </p>
+
+      <h2 className="font-display text-xl text-ink">Allergies</h2>
+      <p>
+        Our products may contain fragrance oils, essential oils, or other
+        ingredients that could cause sensitivities. Customers are responsible
+        for reviewing product descriptions before purchasing.
+      </p>
+
+      <h2 className="font-display text-xl text-ink">Intellectual Property</h2>
+      <p>
+        All product names, photos, logos, designs, and content created by
+        Soya Haven Co. are the property of Soya Haven Co. and may not be
+        copied or used without written permission.
+      </p>
+
+      <h2 className="font-display text-xl text-ink">Changes</h2>
+      <p>
+        We reserve the right to update these Terms &amp; Conditions at any
+        time without prior notice.
+      </p>
     </StaticPage>
   );
 }

@@ -29,3 +29,13 @@ export function priceFor(scentName, sizeId) {
   if (price == null) throw new Error(`Unknown size "${sizeId}" for scent "${scentName}"`);
   return price;
 }
+
+// Flat-rate shipping — a fixed $6.95 for a single bottle, free on any
+// order of 2+ bottles. Deliberately not using Stripe's address-based
+// shipping calculator; totalQuantity is the sum of all line item
+// quantities in the cart, not the number of distinct scents.
+export const SINGLE_BOTTLE_SHIPPING = 6.95;
+
+export function shippingFor(totalQuantity) {
+  return totalQuantity >= 2 ? 0 : SINGLE_BOTTLE_SHIPPING;
+}
