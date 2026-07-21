@@ -40,6 +40,18 @@ export default function Footer() {
         ) : (
           <span className="opacity-50">Instagram</span>
         )}
+        {business.etsyUrl ? (
+          <a
+            href={business.etsyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-ink"
+          >
+            Etsy
+          </a>
+        ) : (
+          <span className="opacity-50">Etsy</span>
+        )}
       </div>
 
       <p className="mt-6 text-[11px] text-ink-soft">

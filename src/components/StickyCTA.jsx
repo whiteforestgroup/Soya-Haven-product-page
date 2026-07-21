@@ -41,7 +41,7 @@ export default function StickyCTA({ summary, scrollTargetRef }) {
           </p>
           <p className="text-xs text-ink-soft">
             {summary.itemCount === 2 ? "2 bottles" : "1 bottle"} · $
-            {summary.totalPrice.toFixed(2)}
+            {summary.displayPrice.toFixed(2)}
             {summary.itemCount === 2 && (
               <span className="ml-1 text-sage-deep">Free Shipping</span>
             )}

@@ -83,10 +83,10 @@ export default function Hero({ onSummaryChange }) {
     onSummaryChange?.({
       image: item.type === "video" ? item.poster : item.src,
       scent: activeScent,
-      totalPrice,
+      displayPrice: subtotal,
       itemCount,
     });
-  }, [activeImage, activeScent, totalPrice, itemCount]);
+  }, [activeImage, activeScent, subtotal, itemCount]);
 
   return (
     <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 py-10 md:grid-cols-2 md:gap-12 md:px-6 md:py-16">
@@ -288,14 +288,8 @@ export default function Hero({ onSummaryChange }) {
         {/* Price */}
         <div className="mt-6 flex items-end justify-between">
           <div>
-            <p className="text-3xl font-medium text-ink">${totalPrice.toFixed(2)}</p>
-            {bundleOn ? (
-              <p className="text-xs text-sage-deep">2 bottles · free shipping included</p>
-            ) : (
-              <p className="text-xs text-ink-soft">
-                ${subtotal.toFixed(2)} + ${shippingCost.toFixed(2)} shipping
-              </p>
-            )}
+            <p className="text-3xl font-medium text-ink">${subtotal.toFixed(2)}</p>
+            {bundleOn && <p className="text-xs text-sage-deep">2 bottles · free shipping included</p>}
           </div>
         </div>
 
