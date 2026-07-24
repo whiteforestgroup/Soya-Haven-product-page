@@ -1,4 +1,5 @@
 import logo from "../assets/logo.png";
+import { business } from "../data/business";
 
 export default function OrderConfirmation() {
   return (
@@ -15,6 +16,23 @@ export default function OrderConfirmation() {
       >
         Back to Soya Haven Co.
       </a>
+
+      {business.etsyUrl && (
+        <div className="mt-10 border-t border-ink/10 pt-8">
+          <p className="font-display text-2xl text-ink">Want to shop more?</p>
+          <p className="mt-2 text-[15px] text-ink-soft">
+            Browse the rest of our handmade collection on Etsy.
+          </p>
+          <a
+            href={business.etsyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-block rounded border-2 border-terracotta px-8 py-4 text-sm font-medium tracking-widest text-terracotta uppercase transition hover:bg-terracotta hover:text-cream"
+          >
+            Shop on Etsy
+          </a>
+        </div>
+      )}
     </section>
   );
 }
