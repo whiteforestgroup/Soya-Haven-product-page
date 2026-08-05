@@ -23,11 +23,14 @@ async function klaviyoRequest(path, body) {
     },
     body: JSON.stringify(body),
   });
+  const text = await res.text();
   if (!res.ok) {
-    const text = await res.text();
     throw new Error(`Klaviyo API error ${res.status}: ${text}`);
   }
-  return res.status === 204 ? null : res.json();
+  // Klaviyo returns 202 with an empty body for these async job endpoints,
+  // not just 204 — an empty body isn't valid JSON, so only parse if there's
+  // actually something there.
+  return text ? JSON.parse(text) : null;
 }
 
 // Adds/updates a profile and subscribes it to your default list.
