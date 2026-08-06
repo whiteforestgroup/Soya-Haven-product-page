@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { db } from "../db.js";
 import { resend } from "../integrations/resend.js";
+import { unsubscribeUrl } from "../lib/unsubscribe.js";
 import {
   abandonedCheckoutEmail,
   welcomeEmail,
@@ -59,7 +60,7 @@ async function processEntity({ flow, email, referenceId, anchorAt, steps, buildE
 
     const { subject, html } = buildEmail(step);
     try {
-      await resend.sendEmail({ to: email, subject, html });
+      await resend.sendEmail({ to: email, subject, html, unsubscribeUrl: unsubscribeUrl(email) });
       markSent(flow, step, email, referenceId);
     } catch (err) {
       console.error(`${flow} step ${step} failed for ${email}:`, err.message);
