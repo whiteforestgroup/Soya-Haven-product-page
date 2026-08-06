@@ -24,6 +24,8 @@
   .status-abandoned, .status-expired { background: #f3e0d5; color: #a05a2c; }
   #error { color: #b91c1c; font-size: 13px; margin-bottom: 12px; }
   #empty { color: #6b6055; font-size: 13px; padding: 20px; text-align: center; }
+  h2 { font-size: 15px; margin: 32px 0 10px; }
+  .flow-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; text-transform: uppercase; background: #e8e1f0; color: #5b4a70; }
 </style>
 </head>
 <body>
@@ -38,6 +40,10 @@
   <div id="error"></div>
   <div class="counts" id="counts"></div>
   <div id="tableWrap"></div>
+
+  <h2>Automated emails sent</h2>
+  <p class="sub">Abandoned checkout, welcome, post-purchase, and winback — most recent 100 sends.</p>
+  <div id="automationWrap"></div>
 
   <script>
     const tokenInput = document.getElementById("token");
@@ -67,6 +73,7 @@
         const data = await res.json();
         if (!res.ok) {
           errorEl.textContent = data.error || "Failed to load.";
+          await loadAutomationSends(token);
           return;
         }
 
@@ -88,6 +95,7 @@
 
         if (data.sessions.length === 0) {
           tableWrap.innerHTML = '<div id="empty">No checkout activity yet.</div>';
+          await loadAutomationSends(token);
           return;
         }
 
@@ -122,6 +130,48 @@
           "</tbody></table>";
       } catch (err) {
         errorEl.textContent = "Couldn't reach the server: " + err.message;
+      }
+
+      await loadAutomationSends(token);
+    }
+
+    async function loadAutomationSends(token) {
+      const wrap = document.getElementById("automationWrap");
+      wrap.innerHTML = "";
+      try {
+        const res = await fetch("/api/admin/automation-sends", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        const data = await res.json();
+        if (!res.ok) return;
+
+        if (data.sends.length === 0) {
+          wrap.innerHTML = '<div id="empty">No automated emails sent yet.</div>';
+          return;
+        }
+
+        const rows = data.sends
+          .map(function (s) {
+            return (
+              "<tr><td>" +
+              new Date(s.sent_at + "Z").toLocaleString() +
+              '</td><td><span class="flow-tag">' +
+              s.flow.replace("_", " ") +
+              "</span></td><td>Email " +
+              s.step +
+              "</td><td>" +
+              s.email +
+              "</td></tr>"
+            );
+          })
+          .join("");
+
+        wrap.innerHTML =
+          "<table><thead><tr><th>Sent</th><th>Flow</th><th>Step</th><th>Email</th></tr></thead><tbody>" +
+          rows +
+          "</tbody></table>";
+      } catch (err) {
+        // Non-fatal — the orders table above already surfaced connection errors.
       }
     }
 

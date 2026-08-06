@@ -35,3 +35,10 @@ adminRouter.get("/admin/orders", requireAdmin, (req, res) => {
 
   res.json({ sessions, counts, subscriberCount });
 });
+
+adminRouter.get("/admin/automation-sends", requireAdmin, (req, res) => {
+  const sends = db
+    .prepare(`SELECT flow, step, email, sent_at FROM automation_sends ORDER BY sent_at DESC LIMIT 100`)
+    .all();
+  res.json({ sends });
+});
