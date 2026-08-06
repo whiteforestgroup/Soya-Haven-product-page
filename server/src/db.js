@@ -36,4 +36,24 @@ db.exec(`
     source TEXT NOT NULL DEFAULT 'unknown', -- checkout | popup | etc.
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  -- Records every automated email we've sent, so the periodic sweep never
+  -- sends the same step twice. reference_id scopes a step to a specific
+  -- checkout/order/subscriber/winback-cycle (see jobs/automations.js).
+  CREATE TABLE IF NOT EXISTS automation_sends (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    flow TEXT NOT NULL,
+    step INTEGER NOT NULL,
+    email TEXT NOT NULL,
+    reference_id TEXT NOT NULL,
+    sent_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(flow, step, email, reference_id)
+  );
+
+  -- Anyone who has clicked "unsubscribe" — checked before every automated
+  -- send, regardless of which flow. CAN-SPAM requires this to actually work.
+  CREATE TABLE IF NOT EXISTS email_suppressions (
+    email TEXT PRIMARY KEY,
+    suppressed_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 `);

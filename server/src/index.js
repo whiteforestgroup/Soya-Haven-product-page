@@ -7,7 +7,8 @@ import { checkoutRouter } from "./routes/checkout.js";
 import { webhookRouter } from "./routes/webhook.js";
 import { subscribeRouter } from "./routes/subscribe.js";
 import { adminRouter } from "./routes/admin.js";
-import { startAbandonedCartJob } from "./jobs/abandonedCart.js";
+import { unsubscribeRouter } from "./routes/unsubscribe.js";
+import { startAutomationJob } from "./jobs/automations.js";
 import "./db.js"; // ensures tables exist on boot
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -29,6 +30,7 @@ app.use(express.json());
 app.use("/api", checkoutRouter);
 app.use("/api", subscribeRouter);
 app.use("/api", adminRouter);
+app.use("/api", unsubscribeRouter);
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
@@ -49,5 +51,5 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
   console.log(`Soya Haven server listening on http://localhost:${port}`);
-  startAbandonedCartJob();
+  startAutomationJob();
 });
