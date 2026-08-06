@@ -48,6 +48,42 @@ function p(text) {
 }
 
 // ---------------------------------------------------------------------------
+// Order confirmation — sent immediately on a completed purchase, separate
+// from the (intentionally delayed) Post-Purchase flow below. This is a
+// transactional receipt, not a marketing send.
+// ---------------------------------------------------------------------------
+export function orderConfirmationEmail(to, { items, totalAmount }) {
+  const itemRows = items
+    .map(
+      (item) =>
+        `<tr>
+          <td style="padding: 6px 0; border-bottom: 1px solid #E9E1D1;">${item.scent} (${item.size}) &times; ${item.quantity}</td>
+          <td style="padding: 6px 0; border-bottom: 1px solid #E9E1D1; text-align: right;">$${(item.unitPrice * item.quantity).toFixed(2)}</td>
+        </tr>`
+    )
+    .join("");
+
+  return {
+    subject: "Your Soya Haven Co. order is confirmed! 🌿",
+    html: wrapper({
+      to,
+      preheader: "Thank you for your order — here's a quick summary.",
+      bodyHtml:
+        p("Hi,") +
+        p("Thank you for your order! It's already being handcrafted with care here in Fredericksburg, Virginia.") +
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 16px 0; font-size: 14px;">
+          ${itemRows}
+          <tr>
+            <td style="padding: 10px 0 0; font-weight: bold;">Total</td>
+            <td style="padding: 10px 0 0; font-weight: bold; text-align: right;">$${totalAmount.toFixed(2)}</td>
+          </tr>
+        </table>` +
+        p("You'll get another email from us once it ships. Questions in the meantime? Just reply — a real person reads these."),
+    }),
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Flow 1 — Abandoned Checkout
 // ---------------------------------------------------------------------------
 export function abandonedCheckoutEmail(step, to, { scent } = {}) {

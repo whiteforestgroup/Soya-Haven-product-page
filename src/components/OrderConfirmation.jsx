@@ -10,6 +10,9 @@ export default function OrderConfirmation() {
         Your order is confirmed and being handcrafted with care. You'll get an email
         confirmation shortly, and another once it ships.
       </p>
+      <p className="mt-2 text-xs text-ink-soft/70">
+        Don't see it in a few minutes? Check your spam or promotions folder, just in case.
+      </p>
       <a
         href="/"
         className="mt-8 rounded bg-sage-deep px-8 py-4 text-sm font-medium tracking-widest text-cream uppercase transition hover:bg-sage-deep-dark"

@@ -3,6 +3,9 @@ import Stripe from "stripe";
 import { db } from "../db.js";
 import { klaviyo } from "../integrations/klaviyo.js";
 import { meta } from "../integrations/meta.js";
+import { resend } from "../integrations/resend.js";
+import { orderConfirmationEmail } from "../emails/templates.js";
+import { unsubscribeUrl } from "../lib/unsubscribe.js";
 
 export const webhookRouter = express.Router();
 
@@ -61,6 +64,17 @@ webhookRouter.post("/webhook/stripe", async (req, res) => {
           customData: { value: row.total_amount, currency: "USD" },
         })
         .catch((err) => console.error("Meta CAPI failed:", err.message));
+
+      // Immediate receipt — separate from the (intentionally delayed)
+      // Post-Purchase automation flow. Always sent regardless of marketing
+      // opt-out status, since this is transactional, not marketing.
+      const { subject, html } = orderConfirmationEmail(row.email, {
+        items: JSON.parse(row.cart_json),
+        totalAmount: row.total_amount,
+      });
+      resend
+        .sendEmail({ to: row.email, subject, html, unsubscribeUrl: unsubscribeUrl(row.email) })
+        .catch((err) => console.error("Order confirmation email failed:", err.message));
     }
   }
 

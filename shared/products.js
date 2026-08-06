@@ -45,3 +45,10 @@ export const SINGLE_BOTTLE_SHIPPING = 6.95;
 export function shippingFor(totalQuantity) {
   return totalQuantity >= 2 ? 0 : SINGLE_BOTTLE_SHIPPING;
 }
+
+// Flat 7% sales tax, applied to product subtotal only (not shipping).
+export const SALES_TAX_RATE = 0.07;
+
+export function taxFor(subtotal) {
+  return Math.round(subtotal * SALES_TAX_RATE * 100) / 100;
+}

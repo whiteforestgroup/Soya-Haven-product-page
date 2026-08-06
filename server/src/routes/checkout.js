@@ -2,7 +2,7 @@ import express from "express";
 import Stripe from "stripe";
 import { randomUUID } from "node:crypto";
 import { db } from "../db.js";
-import { priceFor, shippingFor } from "../../../shared/products.js";
+import { priceFor, shippingFor, taxFor } from "../../../shared/products.js";
 import { klaviyo } from "../integrations/klaviyo.js";
 import { meta } from "../integrations/meta.js";
 
@@ -44,7 +44,8 @@ checkoutRouter.post("/checkout", async (req, res) => {
   const subtotal = lineItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   const totalQuantity = lineItems.reduce((sum, item) => sum + item.quantity, 0);
   const shippingAmount = shippingFor(totalQuantity);
-  const totalAmount = subtotal + shippingAmount;
+  const taxAmount = taxFor(subtotal);
+  const totalAmount = subtotal + shippingAmount + taxAmount;
   const cartJson = JSON.stringify(lineItems);
   // Reuse the browser pixel's event ID when provided, so the client-side
   // InitiateCheckout event and this server-side one dedupe as a single
@@ -100,14 +101,24 @@ checkoutRouter.post("/checkout", async (req, res) => {
     session = await stripe.checkout.sessions.create({
       mode: "payment",
       customer_email: email,
-      line_items: lineItems.map((item) => ({
-        quantity: item.quantity,
-        price_data: {
-          currency: "usd",
-          unit_amount: Math.round(item.unitPrice * 100),
-          product_data: { name: `Natural Room Spray — ${item.scent} (${item.size})` },
+      line_items: [
+        ...lineItems.map((item) => ({
+          quantity: item.quantity,
+          price_data: {
+            currency: "usd",
+            unit_amount: Math.round(item.unitPrice * 100),
+            product_data: { name: `Natural Room Spray — ${item.scent} (${item.size})` },
+          },
+        })),
+        {
+          quantity: 1,
+          price_data: {
+            currency: "usd",
+            unit_amount: Math.round(taxAmount * 100),
+            product_data: { name: "Sales Tax (7%)" },
+          },
         },
-      })),
+      ],
       metadata: { checkoutSessionId: String(checkoutSessionId), eventId },
       // We ship within the US only for now — revisit if that changes.
       shipping_address_collection: { allowed_countries: ["US"] },
