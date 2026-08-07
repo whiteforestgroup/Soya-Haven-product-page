@@ -26,6 +26,14 @@
   #empty { color: #6b6055; font-size: 13px; padding: 20px; text-align: center; }
   h2 { font-size: 15px; margin: 32px 0 10px; }
   .flow-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; text-transform: uppercase; background: #e8e1f0; color: #5b4a70; }
+  .integ-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .integ-pill { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; background: white; border: 1px solid #e5e0d5; }
+  .integ-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .integ-dot.on { background: #4a7a4a; }
+  .integ-dot.off { background: #c0392b; }
+  #testMetaResult { margin-top: 10px; padding: 10px 12px; border-radius: 6px; font-size: 12px; white-space: pre-wrap; word-break: break-word; display: none; }
+  #testMetaResult.ok { display: block; background: #dfe7db; color: #2f3d2b; }
+  #testMetaResult.fail { display: block; background: #f6dede; color: #7a2a20; }
 </style>
 </head>
 <body>
@@ -38,6 +46,13 @@
   </div>
 
   <div id="error"></div>
+
+  <h2 style="margin-top:0;">Integrations</h2>
+  <div class="integ-row" id="integRow"></div>
+  <button id="testMetaBtn" onclick="testMeta()" style="margin-bottom: 8px;">Send a real test event to Meta</button>
+  <div id="testMetaResult"></div>
+
+  <h2>Orders</h2>
   <div class="counts" id="counts"></div>
   <div id="tableWrap"></div>
 
@@ -65,6 +80,8 @@
       tableWrap.innerHTML = "";
 
       if (!token) return;
+
+      await loadIntegrationStatus(token);
 
       try {
         const res = await fetch("/api/admin/orders", {
@@ -172,6 +189,66 @@
           "</tbody></table>";
       } catch (err) {
         // Non-fatal — the orders table above already surfaced connection errors.
+      }
+    }
+
+    async function loadIntegrationStatus(token) {
+      const row = document.getElementById("integRow");
+      row.innerHTML = "";
+      try {
+        const res = await fetch("/api/admin/integration-status", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        const labels = {
+          stripe: "Stripe",
+          stripeWebhook: "Stripe Webhook",
+          klaviyo: "Klaviyo",
+          resend: "Resend",
+          meta: "Meta",
+        };
+        row.innerHTML = Object.keys(labels)
+          .map(function (key) {
+            const on = data[key];
+            return (
+              '<div class="integ-pill"><span class="integ-dot ' +
+              (on ? "on" : "off") +
+              '"></span>' +
+              labels[key] +
+              (on ? " configured" : " not set") +
+              "</div>"
+            );
+          })
+          .join("");
+      } catch (err) {
+        // Non-fatal.
+      }
+    }
+
+    async function testMeta() {
+      const token = tokenInput.value.trim();
+      const resultEl = document.getElementById("testMetaResult");
+      if (!token) return;
+      resultEl.className = "";
+      resultEl.textContent = "Sending...";
+      resultEl.style.display = "block";
+      try {
+        const res = await fetch("/api/admin/test-meta", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token },
+        });
+        const data = await res.json();
+        if (data.ok) {
+          resultEl.className = "ok";
+          resultEl.textContent = "Success! Meta accepted the event:\n" + JSON.stringify(data.result, null, 2);
+        } else {
+          resultEl.className = "fail";
+          resultEl.textContent = "Failed (" + data.reason + "):\n" + data.message;
+        }
+      } catch (err) {
+        resultEl.className = "fail";
+        resultEl.textContent = "Couldn't reach the server: " + err.message;
       }
     }
 

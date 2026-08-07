@@ -1,5 +1,8 @@
 import express from "express";
 import { db } from "../db.js";
+import { klaviyo } from "../integrations/klaviyo.js";
+import { resend } from "../integrations/resend.js";
+import { meta } from "../integrations/meta.js";
 
 export const adminRouter = express.Router();
 
@@ -41,4 +44,36 @@ adminRouter.get("/admin/automation-sends", requireAdmin, (req, res) => {
     .prepare(`SELECT flow, step, email, sent_at FROM automation_sends ORDER BY sent_at DESC LIMIT 100`)
     .all();
   res.json({ sends });
+});
+
+// Cheap presence check for every integration — no API calls, just "is the
+// key actually set on this running server right now."
+adminRouter.get("/admin/integration-status", requireAdmin, (req, res) => {
+  res.json({
+    stripe: Boolean(process.env.STRIPE_SECRET_KEY),
+    stripeWebhook: Boolean(process.env.STRIPE_WEBHOOK_SECRET),
+    klaviyo: klaviyo.isConfigured(),
+    resend: resend.isConfigured(),
+    meta: meta.isConfigured(),
+  });
+});
+
+// Actually attempts a real send to Meta right now and returns the exact
+// result or error — the definitive answer instead of guessing from logs.
+adminRouter.post("/admin/test-meta", requireAdmin, async (req, res) => {
+  if (!meta.isConfigured()) {
+    return res.json({ ok: false, reason: "not_configured", message: "META_PIXEL_ID / META_ACCESS_TOKEN not set." });
+  }
+  try {
+    const result = await meta.sendEvent({
+      eventName: "InitiateCheckout",
+      eventId: `admin-test-${Date.now()}`,
+      email: "test@soyahaven.com",
+      sourceUrl: process.env.FRONTEND_URL || "https://soyahaven.com",
+      customData: { value: 1, currency: "USD" },
+    });
+    res.json({ ok: true, result });
+  } catch (err) {
+    res.json({ ok: false, reason: "send_failed", message: err.message });
+  }
 });
