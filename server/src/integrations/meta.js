@@ -29,6 +29,7 @@ export async function sendEvent({
   email,
   clientIp,
   userAgent,
+  sourceUrl,
   customData = {},
 }) {
   if (!isConfigured()) {
@@ -42,6 +43,7 @@ export async function sendEvent({
         event_name: eventName,
         event_time: Math.floor(Date.now() / 1000),
         event_id: eventId,
+        event_source_url: sourceUrl,
         action_source: "website",
         user_data: {
           em: email ? [sha256(email)] : undefined,

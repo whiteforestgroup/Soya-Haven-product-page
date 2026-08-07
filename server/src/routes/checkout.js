@@ -77,6 +77,7 @@ checkoutRouter.post("/checkout", async (req, res) => {
       email,
       clientIp: req.ip,
       userAgent: req.get("user-agent"),
+      sourceUrl: process.env.FRONTEND_URL || "http://localhost:5173",
       customData: { value: totalAmount, currency: "USD" },
     })
     .catch((err) => console.error("Meta CAPI failed:", err.message));

@@ -61,6 +61,7 @@ webhookRouter.post("/webhook/stripe", async (req, res) => {
           eventName: "Purchase",
           eventId,
           email: row.email,
+          sourceUrl: `${process.env.FRONTEND_URL || "http://localhost:5173"}/?order=success`,
           customData: { value: row.total_amount, currency: "USD" },
         })
         .catch((err) => console.error("Meta CAPI failed:", err.message));
