@@ -8,6 +8,7 @@ import { webhookRouter } from "./routes/webhook.js";
 import { subscribeRouter } from "./routes/subscribe.js";
 import { adminRouter } from "./routes/admin.js";
 import { unsubscribeRouter } from "./routes/unsubscribe.js";
+import { trackRouter } from "./routes/track.js";
 import { startAutomationJob } from "./jobs/automations.js";
 import "./db.js"; // ensures tables exist on boot
 
@@ -31,6 +32,7 @@ app.use("/api", checkoutRouter);
 app.use("/api", subscribeRouter);
 app.use("/api", adminRouter);
 app.use("/api", unsubscribeRouter);
+app.use("/api", trackRouter);
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 

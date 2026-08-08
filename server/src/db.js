@@ -56,4 +56,13 @@ db.exec(`
     email TEXT PRIMARY KEY,
     suppressed_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  -- One row per page load, recorded by the frontend on mount. Simple
+  -- own-data view counter for the admin dashboard — not a replacement for
+  -- Meta/GA-level analytics, just a quick "how many people are visiting."
+  CREATE TABLE IF NOT EXISTS page_views (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    path TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 `);

@@ -15,6 +15,16 @@ export async function createCheckout({ email, items, eventId }) {
   return data;
 }
 
+export function trackPageView(path) {
+  // Fire-and-forget — a page view failing to log should never affect the
+  // shopper's experience. Server responds 204 (no body) on success.
+  fetch(`${API_URL}/api/track-view`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ path }),
+  }).catch(() => {});
+}
+
 export async function subscribeEmail({ email, source }) {
   const res = await fetch(`${API_URL}/api/subscribe`, {
     method: "POST",

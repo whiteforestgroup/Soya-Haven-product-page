@@ -39,6 +39,28 @@ adminRouter.get("/admin/orders", requireAdmin, (req, res) => {
   res.json({ sessions, counts, subscriberCount });
 });
 
+adminRouter.get("/admin/page-views", requireAdmin, (req, res) => {
+  const total = db.prepare(`SELECT COUNT(*) as count FROM page_views`).get().count;
+
+  const last7Days = db
+    .prepare(
+      `SELECT COUNT(*) as count FROM page_views WHERE created_at >= datetime('now', '-7 days')`
+    )
+    .get().count;
+
+  const byDay = db
+    .prepare(
+      `SELECT date(created_at) as day, COUNT(*) as count
+       FROM page_views
+       WHERE created_at >= datetime('now', '-30 days')
+       GROUP BY day
+       ORDER BY day DESC`
+    )
+    .all();
+
+  res.json({ total, last7Days, byDay });
+});
+
 adminRouter.get("/admin/automation-sends", requireAdmin, (req, res) => {
   const sends = db
     .prepare(`SELECT flow, step, email, sent_at FROM automation_sends ORDER BY sent_at DESC LIMIT 100`)

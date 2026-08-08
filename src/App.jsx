@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { trackPageView } from "./lib/api";
 import AnnouncementBar from "./components/AnnouncementBar";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
@@ -28,6 +29,12 @@ function App() {
   const params = new URLSearchParams(window.location.search);
   const isOrderConfirmation = params.get("order") === "success";
   const PageComponent = staticPages[params.get("page")];
+
+  useEffect(() => {
+    trackPageView(window.location.pathname + window.location.search);
+    // Only ever fire once per real page load, not on every re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isOrderConfirmation) {
     return (
