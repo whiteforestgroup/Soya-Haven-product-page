@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Soya Haven — Marketing Stats</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 24px; background: #f7f2ea; color: #2b241f; }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  h2 { font-size: 15px; margin: 32px 0 10px; }
+  .sub { color: #6b6055; font-size: 13px; margin-bottom: 20px; }
+  .token-row { display: flex; gap: 8px; margin-bottom: 20px; }
+  input[type="password"] { padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; flex: 1; max-width: 320px; }
+  button { padding: 8px 14px; border: none; border-radius: 4px; background: #57654f; color: white; font-size: 13px; cursor: pointer; }
+  button:hover { background: #454f40; }
+  button.danger { background: #a05a2c; }
+  button.danger:hover { background: #7a4520; }
+  .counts { display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+  .count-card { background: white; border: 1px solid #e5e0d5; border-radius: 6px; padding: 14px 18px; min-width: 120px; }
+  .count-card .n { font-size: 26px; font-weight: 600; }
+  .count-card .l { font-size: 11px; text-transform: uppercase; color: #6b6055; letter-spacing: 0.05em; }
+  table { width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #efe7d9; font-size: 13px; }
+  th { background: #efe7d9; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #6b6055; }
+  #error { color: #b91c1c; font-size: 13px; margin-bottom: 12px; }
+  #empty { color: #6b6055; font-size: 13px; padding: 20px; text-align: center; }
+  .funnel { display: flex; align-items: stretch; gap: 0; background: white; border: 1px solid #e5e0d5; border-radius: 6px; overflow: hidden; }
+  .funnel-stage { flex: 1; padding: 16px; text-align: center; border-right: 1px solid #efe7d9; }
+  .funnel-stage:last-child { border-right: none; }
+  .funnel-stage .n { font-size: 24px; font-weight: 600; }
+  .funnel-stage .l { font-size: 11px; text-transform: uppercase; color: #6b6055; letter-spacing: 0.05em; margin-top: 2px; }
+  .funnel-arrow { display: flex; align-items: center; justify-content: center; padding: 0 10px; color: #a89b85; font-size: 13px; white-space: nowrap; }
+  .reset-box { background: #fbeee3; border: 1px solid #e8c9ac; border-radius: 6px; padding: 14px 16px; margin-top: 32px; }
+  .reset-box p { font-size: 13px; margin: 0 0 10px; color: #5c4a30; }
+  #resetResult { margin-top: 10px; padding: 10px 12px; border-radius: 6px; font-size: 12px; white-space: pre-wrap; display: none; }
+  #resetResult.ok { display: block; background: #dfe7db; color: #2f3d2b; }
+  #resetResult.fail { display: block; background: #f6dede; color: #7a2a20; }
+  .nav-link { font-size: 12px; color: #6b6055; }
+</style>
+</head>
+<body>
+  <p class="nav-link"><a href="/admin.html">&larr; Back to Orders dashboard</a></p>
+  <h1>Soya Haven Co. — Marketing Stats</h1>
+  <p class="sub">Traffic source, unique visitors, and the visit → cart → purchase funnel. Admin-only, not linked from the live site.</p>
+
+  <div class="token-row">
+    <input type="password" id="token" placeholder="Admin token" />
+    <button onclick="saveTokenAndLoad()">Load</button>
+  </div>
+
+  <div id="error"></div>
+
+  <h2 style="margin-top:0;">Overview</h2>
+  <div class="counts" id="overviewCounts"></div>
+
+  <h2>Funnel</h2>
+  <div id="funnelWrap"></div>
+
+  <h2>Traffic sources</h2>
+  <div id="sourcesWrap"></div>
+
+  <div class="reset-box">
+    <p><strong>Reset stats</strong> — permanently deletes all page views, checkout sessions, orders, and subscribers, so these numbers reflect only real activity going forward. Does not touch email opt-out records. This cannot be undone.</p>
+    <button class="danger" id="resetBtn" onclick="resetStats()">Reset all stats</button>
+    <div id="resetResult"></div>
+  </div>
+
+  <script>
+    const tokenInput = document.getElementById("token");
+    const stored = localStorage.getItem("soyaHavenAdminToken");
+    if (stored) tokenInput.value = stored;
+
+    function saveTokenAndLoad() {
+      localStorage.setItem("soyaHavenAdminToken", tokenInput.value);
+      load();
+    }
+
+    function fmtPct(n) {
+      return n.toFixed(1) + "%";
+    }
+
+    async function load() {
+      const token = tokenInput.value.trim();
+      const errorEl = document.getElementById("error");
+      errorEl.textContent = "";
+      if (!token) return;
+
+      try {
+        const res = await fetch("/api/admin/marketing-stats", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          errorEl.textContent = data.error || "Failed to load.";
+          return;
+        }
+
+        document.getElementById("overviewCounts").innerHTML =
+          '<div class="count-card"><div class="n">' + data.uniqueVisitors + '</div><div class="l">Unique visitors</div></div>' +
+          '<div class="count-card"><div class="n">' + data.homepageViews + '</div><div class="l">Homepage views</div></div>' +
+          '<div class="count-card"><div class="n">$' + data.revenue.toFixed(2) + '</div><div class="l">Revenue</div></div>' +
+          '<div class="count-card"><div class="n">$' + data.aov.toFixed(2) + '</div><div class="l">Avg order value</div></div>';
+
+        const f = data.funnel;
+        document.getElementById("funnelWrap").innerHTML =
+          '<div class="funnel">' +
+          '<div class="funnel-stage"><div class="n">' + f.visitors + '</div><div class="l">Unique visitors</div></div>' +
+          '<div class="funnel-arrow">' + fmtPct(f.visitorToCartRate) + ' &rarr;</div>' +
+          '<div class="funnel-stage"><div class="n">' + f.cartsStarted + '</div><div class="l">Started checkout</div></div>' +
+          '<div class="funnel-arrow">' + fmtPct(f.cartToPurchaseRate) + ' &rarr;</div>' +
+          '<div class="funnel-stage"><div class="n">' + f.purchases + '</div><div class="l">Purchased</div></div>' +
+          '</div>' +
+          '<p class="sub" style="margin-top:8px; margin-bottom:0;">Overall conversion (visitor &rarr; purchase): <strong>' + fmtPct(f.overallConversionRate) + '</strong></p>';
+
+        const sourcesWrap = document.getElementById("sourcesWrap");
+        if (data.trafficSources.length === 0) {
+          sourcesWrap.innerHTML = '<div id="empty">No page views recorded yet.</div>';
+        } else {
+          const rows = data.trafficSources
+            .map(function (s) {
+              return "<tr><td>" + s.source + "</td><td>" + s.views + "</td><td>" + s.visitors + "</td></tr>";
+            })
+            .join("");
+          sourcesWrap.innerHTML =
+            "<table><thead><tr><th>Source</th><th>Views</th><th>Unique visitors</th></tr></thead><tbody>" + rows + "</tbody></table>";
+        }
+      } catch (err) {
+        errorEl.textContent = "Couldn't reach the server: " + err.message;
+      }
+    }
+
+    async function resetStats() {
+      const token = tokenInput.value.trim();
+      const resultEl = document.getElementById("resetResult");
+      if (!token) return;
+
+      const confirmed = confirm(
+        "This permanently deletes all page views, checkout sessions, orders, and subscribers. This cannot be undone. Continue?"
+      );
+      if (!confirmed) return;
+
+      resultEl.className = "";
+      resultEl.textContent = "Resetting...";
+      resultEl.style.display = "block";
+
+      try {
+        const res = await fetch("/api/admin/reset-stats", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token },
+        });
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          resultEl.className = "ok";
+          resultEl.textContent = "Reset complete. Deleted: " + JSON.stringify(data.deleted, null, 2);
+          await load();
+        } else {
+          resultEl.className = "fail";
+          resultEl.textContent = "Failed: " + (data.error || "Unknown error");
+        }
+      } catch (err) {
+        resultEl.className = "fail";
+        resultEl.textContent = "Couldn't reach the server: " + err.message;
+      }
+    }
+
+    if (stored) load();
+  </script>
+</body>
+</html>

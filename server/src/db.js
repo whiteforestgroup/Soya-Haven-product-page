@@ -63,6 +63,26 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS page_views (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     path TEXT NOT NULL,
+    visitor_id TEXT,
+    utm_source TEXT,
+    utm_medium TEXT,
+    utm_campaign TEXT,
+    referrer TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 `);
+
+// Lightweight migration for columns added after page_views already existed
+// in production — CREATE TABLE IF NOT EXISTS above won't add columns to an
+// already-existing table, so patch them in if missing.
+function ensureColumn(table, column, definition) {
+  const existing = db.prepare(`PRAGMA table_info(${table})`).all().map((c) => c.name);
+  if (!existing.includes(column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+}
+ensureColumn("page_views", "visitor_id", "TEXT");
+ensureColumn("page_views", "utm_source", "TEXT");
+ensureColumn("page_views", "utm_medium", "TEXT");
+ensureColumn("page_views", "utm_campaign", "TEXT");
+ensureColumn("page_views", "referrer", "TEXT");
