@@ -67,7 +67,7 @@ export function orderConfirmationEmail(to, { items, totalAmount }) {
     subject: "Your Soya Haven Co. order is confirmed! 🌿",
     html: wrapper({
       to,
-      preheader: "Thank you for your order — here's a quick summary.",
+      preheader: "Thank you for your order. Here's a quick summary.",
       bodyHtml:
         p("Hi,") +
         p("Thank you for your order! It's already being handcrafted with care here in Fredericksburg, Virginia.") +
@@ -78,7 +78,7 @@ export function orderConfirmationEmail(to, { items, totalAmount }) {
             <td style="padding: 10px 0 0; font-weight: bold; text-align: right;">$${totalAmount.toFixed(2)}</td>
           </tr>
         </table>` +
-        p("You'll get another email from us once it ships. Questions in the meantime? Just reply — a real person reads these."),
+        p("You'll get another email from us once it ships. Questions in the meantime? Just reply. A real person reads these."),
     }),
   };
 }
@@ -86,7 +86,7 @@ export function orderConfirmationEmail(to, { items, totalAmount }) {
 // ---------------------------------------------------------------------------
 // Flow 1 — Abandoned Checkout
 // ---------------------------------------------------------------------------
-export function abandonedCheckoutEmail(step, to, { scent } = {}) {
+export function abandonedCheckoutEmail(step, to, { scent, discountCode, discountExpiresLabel } = {}) {
   if (step === 1) {
     return {
       subject: "You left something in your cart 🌿",
@@ -95,9 +95,9 @@ export function abandonedCheckoutEmail(step, to, { scent } = {}) {
         preheader: `Your ${scent || "order"} is still here whenever you're ready.`,
         bodyHtml:
           p("Hi there,") +
-          p("Looks like you were putting together a Soya Haven order and got pulled away &mdash; it happens to all of us.") +
+          p("Looks like you were putting together a Soya Haven order and got pulled away. It happens to all of us.") +
           p("Your cart is still saved, exactly how you left it. Whenever you're ready, it'll only take a minute to finish.") +
-          p("Every order ships with a free sample of another scent, on us &mdash; no strings attached.") +
+          p("Every order ships with a free sample of another scent, on us. No strings attached.") +
           p("Warmly,<br />The Soya Haven Co. team"),
         ctaLabel: "Finish Your Order",
         ctaUrl: SITE_URL,
@@ -118,26 +118,49 @@ export function abandonedCheckoutEmail(step, to, { scent } = {}) {
             <li style="margin-bottom: 6px;">No parabens, phthalates, dyes, or fillers</li>
             <li style="margin-bottom: 6px;">Handcrafted in small batches in Fredericksburg, Virginia</li>
             <li style="margin-bottom: 6px;">A 4 oz bottle typically lasts 6&ndash;9 months</li>
-            <li>No flames, plugs, or electricity &mdash; just spray and go</li>
+            <li>No flames, plugs, or electricity. Just spray and go</li>
           </ul>` +
           p("And if you add a second bottle, shipping's on us.") +
-          p("Questions before you order? Just reply &mdash; a real person reads these."),
+          p("Questions before you order? Just reply. A real person reads these."),
+        ctaLabel: "Finish Your Order",
+        ctaUrl: SITE_URL,
+      }),
+    };
+  }
+  if (step === 3) {
+    return {
+      subject: "Still thinking it over?",
+      html: wrapper({
+        to,
+        preheader: "We saved your cart, no rush.",
+        bodyHtml:
+          p("Hi,") +
+          p("We won't keep bugging you about this. Just didn't want your cart to disappear without one last check-in.") +
+          p("If something held you back, price, a question about a scent, anything, just hit reply. We'd genuinely like to know.") +
+          p("The Soya Haven Co. team"),
         ctaLabel: "Finish Your Order",
         ctaUrl: SITE_URL,
       }),
     };
   }
   return {
-    subject: "Still thinking it over?",
+    subject: "Hey, this is V",
     html: wrapper({
       to,
-      preheader: "We saved your cart — no rush.",
+      preheader: `Use code ${discountCode} for 10% off. Expires ${discountExpiresLabel}.`,
       bodyHtml:
         p("Hi,") +
-        p("We won't keep bugging you about this &mdash; just didn't want your cart to disappear without one last check-in.") +
-        p("If something held you back &mdash; price, a question about a scent, anything &mdash; just hit reply. We'd genuinely like to know.") +
-        p("The Soya Haven Co. team"),
-      ctaLabel: "Finish Your Order",
+        p("This is V. I saw you were putting together an order and wanted to reach out myself instead of sending another automated email.") +
+        p("We're a small, handmade operation, so every order genuinely matters to us. If price was what held you back, I'd love for you to give us a try. Here's 10% off, on me:") +
+        `<div style="text-align:center; margin: 24px 0; padding: 20px; background:#F6F1E7; border: 1px dashed #C9BC9C; border-radius: 8px;">
+          <div style="font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #6B6154; margin-bottom: 6px;">Your code</div>
+          <div style="font-family: Georgia, serif; font-size: 24px; letter-spacing: 0.04em; color: #52623F; font-weight: bold;">${discountCode}</div>
+          <div style="font-size: 13px; color: #6B6154; margin-top: 6px;">10% off your order &middot; expires ${discountExpiresLabel}</div>
+        </div>` +
+        p("No pressure either way. I just didn't want you to miss it if you were on the fence. And if something else held you back, just hit reply and tell me, I read these myself.") +
+        p("Thank you for even considering a small, handmade business like ours.") +
+        p("V"),
+      ctaLabel: "Use My Code",
       ctaUrl: SITE_URL,
     }),
   };
@@ -170,8 +193,8 @@ export function welcomeEmail(step, to) {
         to,
         preheader: 'The difference between "smells nice" and actually natural.',
         bodyHtml:
-          p("A lot of room sprays use fragrance oil &mdash; synthetic, cheaper, and often mixed with things you can't pronounce.") +
-          p("We use essential oils. Full stop. That means every scent &mdash; from Lemongrass to Bergamot Vanilla &mdash; is the real plant, not a lab copy of it.") +
+          p("A lot of room sprays use fragrance oil: synthetic, cheaper, and often mixed with things you can't pronounce.") +
+          p("We use essential oils. Full stop. That means every scent, from Lemongrass to Bergamot Vanilla, is the real plant, not a lab copy of it.") +
           p("It also means our sprays don't just mask odors, they neutralize them."),
         ctaLabel: "See All Scents",
         ctaUrl: SITE_URL,
@@ -186,7 +209,7 @@ export function welcomeEmail(step, to) {
       bodyHtml:
         p("Ready to bring one home?") +
         p("Every order includes a free sample of another scent, so you get to try something new without committing to a full bottle. And if you grab two bottles, shipping's free.") +
-        p("Most people start with Lemongrass or Peppermint &mdash; both are crowd favorites."),
+        p("Most people start with Lemongrass or Peppermint. Both are crowd favorites."),
       ctaLabel: "Shop Now",
       ctaUrl: SITE_URL,
     }),
@@ -204,8 +227,8 @@ export function postPurchaseEmail(step, to) {
         to,
         preheader: "Handmade with care, on its way to you.",
         bodyHtml:
-          p("Good news &mdash; your order is being handcrafted and packed with care here in Fredericksburg, Virginia!") +
-          p("A couple tips for once it arrives: 2&ndash;3 sprays is usually plenty for an average room, and it works great on fabrics too &mdash; bedding, curtains, towels.") +
+          p("Good news: your order is being handcrafted and packed with care here in Fredericksburg, Virginia!") +
+          p("A couple tips for once it arrives: 2&ndash;3 sprays is usually plenty for an average room, and it works great on fabrics too, like bedding, curtains, and towels.") +
           p("Enjoy!"),
       }),
     };
@@ -218,8 +241,8 @@ export function postPurchaseEmail(step, to) {
         preheader: "We'd love to hear what you think.",
         bodyHtml:
           p("Hi again,") +
-          p("You've had a little time with your Soya Haven order now &mdash; how's it going?") +
-          p("If you have a minute, we'd really appreciate hearing your honest thoughts. It helps us and helps other people deciding what to try &mdash; just reply to this email.") +
+          p("You've had a little time with your Soya Haven order now. How's it going?") +
+          p("If you have a minute, we'd really appreciate hearing your honest thoughts. It helps us and helps other people deciding what to try. Just reply to this email.") +
           p("Thank you for supporting a small, handmade business."),
       }),
     };
@@ -230,7 +253,7 @@ export function postPurchaseEmail(step, to) {
       to,
       preheader: "New scents, or more of your favorite.",
       bodyHtml:
-        p("A 4 oz bottle usually lasts 6&ndash;9 months, so no rush &mdash; but if you're getting low, or ready to try something new, we're here.") +
+        p("A 4 oz bottle usually lasts 6&ndash;9 months, so no rush, but if you're getting low, or ready to try something new, we're here.") +
         p("Haven't tried Tea Tree or Frankincense yet? A lot of repeat customers end up collecting a few.") +
         p(`We also sell candles and wax melts on <a href="${business.etsyUrl}" style="color:#52623F;">Etsy</a>, if you want to round things out.`),
       ctaLabel: "Shop Room Sprays",
@@ -251,7 +274,7 @@ export function winbackEmail(step, to) {
         preheader: "A few new scents since you last checked in.",
         bodyHtml:
           p("Hi,") +
-          p("It's been a bit since we've seen you &mdash; no worries either way, just wanted to say hello.") +
+          p("It's been a bit since we've seen you. No worries either way, just wanted to say hello.") +
           p("Since you last visited, we've added a few new scents to the lineup, and every order still comes with a free sample."),
         ctaLabel: "See What's New",
         ctaUrl: SITE_URL,
@@ -264,8 +287,8 @@ export function winbackEmail(step, to) {
       to,
       preheader: "Totally your call.",
       bodyHtml:
-        p("If you'd like to keep hearing from us, no action needed &mdash; you'll keep getting the occasional email.") +
-        p("If it's not for you right now, no hard feelings &mdash; you can unsubscribe anytime below, and you're always welcome back.") +
+        p("If you'd like to keep hearing from us, no action needed. You'll keep getting the occasional email.") +
+        p("If it's not for you right now, no hard feelings. You can unsubscribe anytime below, and you're always welcome back.") +
         p("Either way, thank you for giving Soya Haven a try."),
     }),
   };
