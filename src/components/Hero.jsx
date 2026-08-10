@@ -28,9 +28,7 @@ const galleryItems = [
 
 export default function Hero({ onSummaryChange }) {
   const [activeScent, setActiveScent] = useState(scents[0].name);
-  const [activeSize, setActiveSize] = useState(
-    sizes.find((s) => s.popular)?.id ?? sizes[0].id
-  );
+  const [activeSize, setActiveSize] = useState(sizes[0].id);
   const [activeImage, setActiveImage] = useState(0);
   const [bundleOn, setBundleOn] = useState(true);
   const [secondScent, setSecondScent] = useState(scents[1].name);
