@@ -4,6 +4,7 @@ import AnnouncementBar from "./components/AnnouncementBar";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import TrustBadges from "./components/TrustBadges";
+import OurStory from "./components/OurStory";
 import WhyUs from "./components/WhyUs";
 import BundleBanner from "./components/BundleBanner";
 import Ingredients from "./components/Ingredients";
@@ -64,6 +65,7 @@ function App() {
         <Hero onSummaryChange={setCtaSummary} />
       </div>
       <TrustBadges />
+      <OurStory />
       <WhyUs />
       <BundleBanner />
       <Ingredients />
