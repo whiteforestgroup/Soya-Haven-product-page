@@ -70,6 +70,15 @@ db.exec(`
     referrer TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  -- Single-row status record, overwritten every time the 15-minute email
+  -- automation sweep runs — lets the admin dashboard show "last checked N
+  -- minutes ago" instead of that being invisible/unverifiable.
+  CREATE TABLE IF NOT EXISTS automation_runs (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    last_run_at TEXT NOT NULL,
+    last_sent_count INTEGER NOT NULL
+  );
 `);
 
 // Lightweight migration for columns added after page_views already existed

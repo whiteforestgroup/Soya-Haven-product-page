@@ -19,6 +19,16 @@ const WELCOME_STEPS = [0, 3 * 24 * 60, 7 * 24 * 60]; // immediate, 3d, 7d
 const POST_PURCHASE_STEPS = [3 * 24 * 60, 15 * 24 * 60, 60 * 24 * 60]; // 3d, 15d, 60d
 const WINBACK_STEPS = [90 * 24 * 60, 97 * 24 * 60]; // 90d, 97d
 
+// Exposed so the admin "what stage is this email on" view can compute the
+// same next-due-step math as the sweep itself, without duplicating or
+// drifting from these numbers.
+export const FLOW_STEPS = {
+  abandoned_checkout: ABANDONED_STEPS,
+  welcome: WELCOME_STEPS,
+  post_purchase: POST_PURCHASE_STEPS,
+  winback: WINBACK_STEPS,
+};
+
 function isSuppressed(email) {
   return Boolean(
     db.prepare(`SELECT 1 FROM email_suppressions WHERE email = ?`).get(email.toLowerCase())
@@ -50,7 +60,7 @@ function minutesSince(isoDate) {
 // session, subscriber, order, etc). Steps must be sent in order — this
 // only ever sends one step per sweep per entity, the next due one.
 async function processEntity({ flow, email, referenceId, anchorAt, steps, buildEmail }) {
-  if (isSuppressed(email)) return;
+  if (isSuppressed(email)) return false;
 
   const elapsed = minutesSince(anchorAt);
   for (let i = 0; i < steps.length; i++) {
@@ -62,11 +72,13 @@ async function processEntity({ flow, email, referenceId, anchorAt, steps, buildE
     try {
       await resend.sendEmail({ to: email, subject, html, unsubscribeUrl: unsubscribeUrl(email) });
       markSent(flow, step, email, referenceId);
+      return true;
     } catch (err) {
       console.error(`${flow} step ${step} failed for ${email}:`, err.message);
+      return false;
     }
-    break; // one send per entity per sweep is plenty
   }
+  return false;
 }
 
 async function sweepAbandonedCheckout() {
@@ -74,9 +86,10 @@ async function sweepAbandonedCheckout() {
     .prepare(`SELECT * FROM checkout_sessions WHERE status = 'started'`)
     .all();
 
+  let sent = 0;
   for (const row of rows) {
     const cart = JSON.parse(row.cart_json);
-    await processEntity({
+    const didSend = await processEntity({
       flow: "abandoned_checkout",
       email: row.email,
       referenceId: String(row.id),
@@ -84,7 +97,9 @@ async function sweepAbandonedCheckout() {
       steps: ABANDONED_STEPS,
       buildEmail: (step) => abandonedCheckoutEmail(step, row.email, { scent: cart[0]?.scent }),
     });
+    if (didSend) sent++;
   }
+  return sent;
 }
 
 async function sweepWelcome() {
@@ -98,8 +113,9 @@ async function sweepWelcome() {
     )
     .all();
 
+  let sent = 0;
   for (const row of rows) {
-    await processEntity({
+    const didSend = await processEntity({
       flow: "welcome",
       email: row.email,
       referenceId: String(row.id),
@@ -107,7 +123,9 @@ async function sweepWelcome() {
       steps: WELCOME_STEPS,
       buildEmail: (step) => welcomeEmail(step, row.email),
     });
+    if (didSend) sent++;
   }
+  return sent;
 }
 
 async function sweepPostPurchase() {
@@ -119,8 +137,9 @@ async function sweepPostPurchase() {
     .prepare(`SELECT * FROM orders WHERE created_at > datetime('now', ?)`)
     .all(`-${WINBACK_STEPS[0]} minutes`);
 
+  let sent = 0;
   for (const row of rows) {
-    await processEntity({
+    const didSend = await processEntity({
       flow: "post_purchase",
       email: row.email,
       referenceId: String(row.id),
@@ -128,7 +147,9 @@ async function sweepPostPurchase() {
       steps: POST_PURCHASE_STEPS,
       buildEmail: (step) => postPurchaseEmail(step, row.email),
     });
+    if (didSend) sent++;
   }
+  return sent;
 }
 
 async function sweepWinback() {
@@ -145,8 +166,9 @@ async function sweepWinback() {
     )
     .all();
 
+  let sent = 0;
   for (const row of rows) {
-    await processEntity({
+    const didSend = await processEntity({
       flow: "winback",
       email: row.email,
       referenceId: String(row.id),
@@ -154,14 +176,26 @@ async function sweepWinback() {
       steps: WINBACK_STEPS,
       buildEmail: (step) => winbackEmail(step, row.email),
     });
+    if (didSend) sent++;
   }
+  return sent;
+}
+
+function recordRun(sentCount) {
+  db.prepare(
+    `INSERT INTO automation_runs (id, last_run_at, last_sent_count)
+     VALUES (1, datetime('now'), ?)
+     ON CONFLICT(id) DO UPDATE SET last_run_at = excluded.last_run_at, last_sent_count = excluded.last_sent_count`
+  ).run(sentCount);
 }
 
 async function runSweep() {
-  await sweepAbandonedCheckout();
-  await sweepWelcome();
-  await sweepPostPurchase();
-  await sweepWinback();
+  let sent = 0;
+  sent += await sweepAbandonedCheckout();
+  sent += await sweepWelcome();
+  sent += await sweepPostPurchase();
+  sent += await sweepWinback();
+  recordRun(sent);
 }
 
 export function startAutomationJob() {

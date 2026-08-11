@@ -34,6 +34,18 @@
   #testMetaResult { margin-top: 10px; padding: 10px 12px; border-radius: 6px; font-size: 12px; white-space: pre-wrap; word-break: break-word; display: none; }
   #testMetaResult.ok { display: block; background: #dfe7db; color: #2f3d2b; }
   #testMetaResult.fail { display: block; background: #f6dede; color: #7a2a20; }
+  .health-pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; font-size: 12px; background: white; border: 1px solid #e5e0d5; margin-bottom: 14px; }
+  .health-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .health-dot.fresh { background: #4a7a4a; }
+  .health-dot.stale { background: #c0392b; }
+  .health-dot.unknown { background: #b7ac97; }
+  .stage-pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; }
+  .stage-due { background: #f0e6d8; color: #8a6d23; }
+  .stage-waiting { background: #e8e1f0; color: #5b4a70; }
+  .stage-complete { background: #dfe7db; color: #454f40; }
+  .stage-none { color: #a89b85; }
+  .unsub-pill { background: #f3e0d5; color: #a05a2c; padding: 2px 8px; border-radius: 999px; font-size: 11px; text-transform: uppercase; }
+  .sub-pill { background: #dfe7db; color: #454f40; padding: 2px 8px; border-radius: 999px; font-size: 11px; text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -60,6 +72,13 @@
   <h2>Orders</h2>
   <div class="counts" id="counts"></div>
   <div id="tableWrap"></div>
+
+  <h2>Automation sweep</h2>
+  <div id="healthWrap"></div>
+
+  <h2>Customers</h2>
+  <p class="sub">Every email we've heard from &mdash; subscribed/unsubscribed, which automation they're in and how far along, and how many times they've bought.</p>
+  <div id="customersWrap"></div>
 
   <h2>Automated emails sent</h2>
   <p class="sub">Abandoned checkout, welcome, post-purchase, and winback — most recent 100 sends.</p>
@@ -88,6 +107,8 @@
 
       await loadIntegrationStatus(token);
       await loadPageViews(token);
+      await loadAutomationHealth(token);
+      await loadCustomers(token);
 
       try {
         const res = await fetch("/api/admin/orders", {
@@ -231,6 +252,119 @@
 
         wrap.innerHTML =
           "<table><thead><tr><th>Day</th><th>Views</th></tr></thead><tbody>" + rows + "</tbody></table>";
+      } catch (err) {
+        // Non-fatal.
+      }
+    }
+
+    async function loadAutomationHealth(token) {
+      const wrap = document.getElementById("healthWrap");
+      wrap.innerHTML = "";
+      try {
+        const res = await fetch("/api/admin/automation-health", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (data.lastRunAt === null) {
+          wrap.innerHTML =
+            '<div class="health-pill"><span class="health-dot unknown"></span>Sweep has never run yet</div>';
+          return;
+        }
+
+        const isFresh = data.minutesAgo <= 20; // sweep runs every 15 min — allow a little slack
+        const dotClass = isFresh ? "fresh" : "stale";
+        const ago =
+          data.minutesAgo < 1
+            ? "just now"
+            : data.minutesAgo === 1
+            ? "1 minute ago"
+            : data.minutesAgo + " minutes ago";
+
+        wrap.innerHTML =
+          '<div class="health-pill"><span class="health-dot ' +
+          dotClass +
+          '"></span>Last ran ' +
+          ago +
+          " &middot; sent " +
+          data.lastSentCount +
+          (data.lastSentCount === 1 ? " email" : " emails") +
+          "</div>";
+      } catch (err) {
+        // Non-fatal.
+      }
+    }
+
+    function fmtStage(stage) {
+      if (!stage) return '<span class="stage-none">&mdash;</span>';
+      const flowLabel = stage.flow.replace("_", " ");
+      if (stage.status === "complete") {
+        return (
+          '<span class="stage-pill stage-complete">' +
+          flowLabel +
+          " &middot; all " +
+          stage.totalSteps +
+          " sent</span>"
+        );
+      }
+      const progress = "step " + stage.stepsSent + " of " + stage.totalSteps + " sent";
+      if (stage.status === "due") {
+        return (
+          '<span class="stage-pill stage-due">' + flowLabel + " &middot; " + progress + ", next one due now</span>"
+        );
+      }
+      const hours = Math.round(stage.minutesUntilDue / 60);
+      const dueLabel = hours < 1 ? "under an hour" : hours === 1 ? "~1 hour" : "~" + hours + " hours";
+      return (
+        '<span class="stage-pill stage-waiting">' +
+        flowLabel +
+        " &middot; " +
+        progress +
+        ", next in " +
+        dueLabel +
+        "</span>"
+      );
+    }
+
+    async function loadCustomers(token) {
+      const wrap = document.getElementById("customersWrap");
+      wrap.innerHTML = "";
+      try {
+        const res = await fetch("/api/admin/customers", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (data.customers.length === 0) {
+          wrap.innerHTML = '<div id="empty">No emails on file yet.</div>';
+          return;
+        }
+
+        const rows = data.customers
+          .map(function (c) {
+            const statusPill = c.unsubscribed
+              ? '<span class="unsub-pill">Unsubscribed</span>'
+              : '<span class="sub-pill">Subscribed</span>';
+            return (
+              "<tr><td>" +
+              c.email +
+              "</td><td>" +
+              statusPill +
+              "</td><td>" +
+              fmtStage(c.stage) +
+              "</td><td>" +
+              c.orderCount +
+              "</td></tr>"
+            );
+          })
+          .join("");
+
+        wrap.innerHTML =
+          "<table><thead><tr><th>Email</th><th>Status</th><th>Automation stage</th><th>Orders</th></tr></thead><tbody>" +
+          rows +
+          "</tbody></table>";
       } catch (err) {
         // Non-fatal.
       }
