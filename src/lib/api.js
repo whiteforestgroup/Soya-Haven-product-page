@@ -53,6 +53,23 @@ export function trackPageView(path) {
   }).catch(() => {});
 }
 
+// Fire-and-forget click tracking for the specific on-page actions worth
+// knowing about — which scent, which photo, whether add-to-cart got hit.
+// Server validates eventType against an allowlist, so an unrecognized
+// value here just gets rejected rather than polluting the data.
+export function trackEvent(eventType, label) {
+  fetch(`${API_URL}/api/track-event`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      eventType,
+      label,
+      visitorId: getVisitorId(),
+      path: window.location.pathname,
+    }),
+  }).catch(() => {});
+}
+
 export async function subscribeEmail({ email, source }) {
   const res = await fetch(`${API_URL}/api/subscribe`, {
     method: "POST",

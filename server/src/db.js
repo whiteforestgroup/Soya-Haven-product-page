@@ -79,6 +79,18 @@ db.exec(`
     last_run_at TEXT NOT NULL,
     last_sent_count INTEGER NOT NULL
   );
+
+  -- On-page interaction clicks (which scent, which photo, add-to-cart) —
+  -- deliberately narrow, business-relevant events, not a general analytics
+  -- pipeline. See routes/track.js for the allowed event_type values.
+  CREATE TABLE IF NOT EXISTS interaction_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_type TEXT NOT NULL,
+    label TEXT NOT NULL,
+    visitor_id TEXT,
+    path TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 `);
 
 // Lightweight migration for columns added after page_views already existed

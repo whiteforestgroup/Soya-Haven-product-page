@@ -69,6 +69,10 @@
   <div class="counts" id="viewCounts"></div>
   <div id="viewsWrap"></div>
 
+  <h2>On-page clicks</h2>
+  <p class="sub">Which scents and photos people click on, and how often add-to-cart gets hit.</p>
+  <div id="interactionWrap"></div>
+
   <h2>Orders</h2>
   <div class="counts" id="counts"></div>
   <div id="tableWrap"></div>
@@ -107,6 +111,7 @@
 
       await loadIntegrationStatus(token);
       await loadPageViews(token);
+      await loadInteractionStats(token);
       await loadAutomationHealth(token);
       await loadCustomers(token);
 
@@ -252,6 +257,51 @@
 
         wrap.innerHTML =
           "<table><thead><tr><th>Day</th><th>Views</th></tr></thead><tbody>" + rows + "</tbody></table>";
+      } catch (err) {
+        // Non-fatal.
+      }
+    }
+
+    async function loadInteractionStats(token) {
+      const wrap = document.getElementById("interactionWrap");
+      wrap.innerHTML = "";
+      try {
+        const res = await fetch("/api/admin/interaction-stats", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+
+        const sections = [
+          { key: "scent_click", title: "Scent clicks" },
+          { key: "photo_click", title: "Photo clicks" },
+          { key: "add_to_cart_click", title: "Add-to-cart clicks" },
+        ];
+
+        const hasAny = sections.some((s) => (data.events[s.key] || []).length > 0);
+        if (!hasAny) {
+          wrap.innerHTML = '<div id="empty">No click activity recorded yet.</div>';
+          return;
+        }
+
+        wrap.innerHTML = sections
+          .map(function (s) {
+            const rows = data.events[s.key] || [];
+            if (rows.length === 0) return "";
+            const tableRows = rows
+              .map(function (r) {
+                return "<tr><td>" + r.label + "</td><td>" + r.count + "</td></tr>";
+              })
+              .join("");
+            return (
+              '<div style="margin-bottom: 18px;"><p class="sub" style="margin-bottom:6px; font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:0.05em;">' +
+              s.title +
+              "</p><table><thead><tr><th>Label</th><th>Clicks</th></tr></thead><tbody>" +
+              tableRows +
+              "</tbody></table></div>"
+            );
+          })
+          .join("");
       } catch (err) {
         // Non-fatal.
       }

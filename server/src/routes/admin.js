@@ -145,6 +145,27 @@ adminRouter.get("/admin/automation-sends", requireAdmin, (req, res) => {
   res.json({ sends });
 });
 
+// Which scents/photos get clicked, and how often add-to-cart gets hit —
+// grouped counts per event type, most-clicked label first.
+adminRouter.get("/admin/interaction-stats", requireAdmin, (req, res) => {
+  const rows = db
+    .prepare(
+      `SELECT event_type, label, COUNT(*) as count
+       FROM interaction_events
+       GROUP BY event_type, label
+       ORDER BY event_type, count DESC`
+    )
+    .all();
+
+  const grouped = {};
+  for (const row of rows) {
+    if (!grouped[row.event_type]) grouped[row.event_type] = [];
+    grouped[row.event_type].push({ label: row.label, count: row.count });
+  }
+
+  res.json({ events: grouped });
+});
+
 // "Is the 15-minute email sweep actually running" — a direct, checkable
 // answer instead of inferring it from whether one customer's inbox looks
 // right. The job overwrites this single row every time it runs.

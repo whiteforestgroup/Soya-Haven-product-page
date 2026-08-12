@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { scents, sizes, heroDifferentiators, priceFor, shippingFor } from "../data/product";
-import { createCheckout } from "../lib/api";
+import { createCheckout, trackEvent } from "../lib/api";
 import { trackPixelEvent } from "../lib/analytics";
 import lemongrassSunflower from "../assets/hero/lemongrass-sunflower.jpg";
 import peppermintDiagonal from "../assets/hero/peppermint-diagonal.jpg";
@@ -43,6 +43,8 @@ export default function Hero({ onSummaryChange }) {
   const totalPrice = subtotal + shippingCost;
 
   async function handleAddToCart() {
+    trackEvent("add_to_cart_click", bundleOn ? "bundle" : "single");
+
     if (!email || !email.includes("@")) {
       setCheckoutStatus("error");
       setCheckoutMessage("Enter a valid email to continue.");
@@ -118,7 +120,10 @@ export default function Hero({ onSummaryChange }) {
           {galleryItems.map((item, i) => (
             <button
               key={item.type === "video" ? "video" : item.src}
-              onClick={() => setActiveImage(i)}
+              onClick={() => {
+                setActiveImage(i);
+                trackEvent("photo_click", item.type === "video" ? "video" : item.alt);
+              }}
               aria-label={item.type === "video" ? "Play product video" : item.alt}
               className={`relative aspect-square w-full max-w-20 overflow-hidden rounded border transition ${
                 activeImage === i ? "border-ink" : "border-transparent"
@@ -184,7 +189,10 @@ export default function Hero({ onSummaryChange }) {
             {scents.map((scent) => (
               <button
                 key={scent.name}
-                onClick={() => setActiveScent(scent.name)}
+                onClick={() => {
+                  setActiveScent(scent.name);
+                  trackEvent("scent_click", scent.name);
+                }}
                 className={`rounded border px-4 py-2 text-sm transition ${
                   activeScent === scent.name
                     ? "border-sage-deep bg-sage-deep text-cream"
@@ -268,7 +276,10 @@ export default function Hero({ onSummaryChange }) {
                 {scents.map((scent) => (
                   <button
                     key={scent.name}
-                    onClick={() => setSecondScent(scent.name)}
+                    onClick={() => {
+                      setSecondScent(scent.name);
+                      trackEvent("scent_click", scent.name);
+                    }}
                     className={`rounded border px-3 py-1.5 text-xs transition ${
                       secondScent === scent.name
                         ? "border-terracotta bg-terracotta text-cream"
