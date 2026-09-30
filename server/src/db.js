@@ -107,3 +107,14 @@ ensureColumn("page_views", "utm_source", "TEXT");
 ensureColumn("page_views", "utm_medium", "TEXT");
 ensureColumn("page_views", "utm_campaign", "TEXT");
 ensureColumn("page_views", "referrer", "TEXT");
+
+// Shipping address Stripe collects at checkout — captured in the webhook
+// so it's never only sitting in Stripe. Without this, fulfilling a real
+// order means digging through the Stripe dashboard by hand.
+ensureColumn("orders", "shipping_name", "TEXT");
+ensureColumn("orders", "shipping_line1", "TEXT");
+ensureColumn("orders", "shipping_line2", "TEXT");
+ensureColumn("orders", "shipping_city", "TEXT");
+ensureColumn("orders", "shipping_state", "TEXT");
+ensureColumn("orders", "shipping_postal_code", "TEXT");
+ensureColumn("orders", "shipping_country", "TEXT");

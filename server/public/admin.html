@@ -46,6 +46,8 @@
   .stage-none { color: #a89b85; }
   .unsub-pill { background: #f3e0d5; color: #a05a2c; padding: 2px 8px; border-radius: 999px; font-size: 11px; text-transform: uppercase; }
   .sub-pill { background: #dfe7db; color: #454f40; padding: 2px 8px; border-radius: 999px; font-size: 11px; text-transform: uppercase; }
+  .addr { font-weight: 600; line-height: 1.5; }
+  .addr-missing { color: #a89b85; }
 </style>
 </head>
 <body>
@@ -96,6 +98,26 @@
     function saveTokenAndLoad() {
       localStorage.setItem("soyaHavenAdminToken", tokenInput.value);
       load();
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+
+    function fmtAddress(s) {
+      if (!s.shipping_line1) {
+        return '<span class="addr-missing">&mdash;</span>';
+      }
+      const lines = [
+        s.shipping_name,
+        s.shipping_line1,
+        s.shipping_line2,
+        [s.shipping_city, s.shipping_state, s.shipping_postal_code].filter(Boolean).join(", "),
+        s.shipping_country,
+      ].filter(Boolean);
+      return '<div class="addr">' + lines.map(escapeHtml).join("<br>") + "</div>";
     }
 
     async function load() {
@@ -168,13 +190,15 @@
               s.status +
               '">' +
               s.status +
-              "</span></td></tr>"
+              "</span></td><td>" +
+              fmtAddress(s) +
+              "</td></tr>"
             );
           })
           .join("");
 
         tableWrap.innerHTML =
-          "<table><thead><tr><th>Date</th><th>Email</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody>" +
+          "<table><thead><tr><th>Date</th><th>Email</th><th>Items</th><th>Total</th><th>Status</th><th>Shipping address</th></tr></thead><tbody>" +
           rows +
           "</tbody></table>";
       } catch (err) {

@@ -44,10 +44,33 @@ webhookRouter.post("/webhook/stripe", async (req, res) => {
         `UPDATE checkout_sessions SET status = 'completed', completed_at = datetime('now') WHERE id = ?`
       ).run(row.id);
 
+      // Stripe's field for this has moved around across API versions —
+      // check the newer `collected_information.shipping_details` location
+      // first, then fall back to the older top-level `shipping_details`.
+      const shipping = session.collected_information?.shipping_details || session.shipping_details;
+      const shippingAddress = shipping?.address || {};
+
       db.prepare(`
-        INSERT INTO orders (checkout_session_id, stripe_payment_intent_id, email, cart_json, total_amount)
-        VALUES (?, ?, ?, ?, ?)
-      `).run(row.id, session.payment_intent, row.email, row.cart_json, row.total_amount);
+        INSERT INTO orders (
+          checkout_session_id, stripe_payment_intent_id, email, cart_json, total_amount,
+          shipping_name, shipping_line1, shipping_line2, shipping_city, shipping_state,
+          shipping_postal_code, shipping_country
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        row.id,
+        session.payment_intent,
+        row.email,
+        row.cart_json,
+        row.total_amount,
+        shipping?.name || null,
+        shippingAddress.line1 || null,
+        shippingAddress.line2 || null,
+        shippingAddress.city || null,
+        shippingAddress.state || null,
+        shippingAddress.postal_code || null,
+        shippingAddress.country || null
+      );
 
       const eventId = session.metadata?.eventId;
       klaviyo

@@ -25,8 +25,13 @@ function requireAdmin(req, res, next) {
 adminRouter.get("/admin/orders", requireAdmin, (req, res) => {
   const sessions = db
     .prepare(
-      `SELECT id, email, cart_json, total_amount, status, created_at, completed_at
-       FROM checkout_sessions ORDER BY created_at DESC LIMIT 200`
+      `SELECT
+         cs.id, cs.email, cs.cart_json, cs.total_amount, cs.status, cs.created_at, cs.completed_at,
+         o.shipping_name, o.shipping_line1, o.shipping_line2, o.shipping_city,
+         o.shipping_state, o.shipping_postal_code, o.shipping_country
+       FROM checkout_sessions cs
+       LEFT JOIN orders o ON o.checkout_session_id = cs.id
+       ORDER BY cs.created_at DESC LIMIT 200`
     )
     .all()
     .map((row) => ({ ...row, cart: JSON.parse(row.cart_json) }));
